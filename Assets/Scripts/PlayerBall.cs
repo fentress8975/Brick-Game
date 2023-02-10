@@ -24,7 +24,7 @@ public class PlayerBall : NetworkBehaviour
 
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (m_BallSpeed.Value <= 0)
         {
@@ -36,7 +36,7 @@ public class PlayerBall : NetworkBehaviour
 
     private void Move()
     {
-        m_Rigidbody.MovePosition(transform.position + m_BallSpeed.Value * Time.deltaTime * transform.TransformDirection(Vector3.forward));
+        m_Rigidbody.MovePosition(transform.position + m_BallSpeed.Value * Time.fixedDeltaTime * transform.TransformDirection(Vector3.forward));
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -47,11 +47,11 @@ public class PlayerBall : NetworkBehaviour
 
         if (_collider.Raycast(_directionRay,out RaycastHit hitInfo, Mathf.Infinity))
         {
-            EditorLogger.Log("RayCast");
-            Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 10, Color.red, 10);
-            Debug.DrawRay(hitInfo.point, hitInfo.normal * 10, Color.green, 10);
-            Debug.DrawRay(hitInfo.point, Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal) * 10, Color.blue, 10);
-            Debug.Log(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal));
+            //EditorLogger.Log("RayCast");
+            //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 10, Color.red, 10);
+            //Debug.DrawRay(hitInfo.point, hitInfo.normal * 10, Color.green, 10);
+            //Debug.DrawRay(hitInfo.point, Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal) * 10, Color.blue, 10);
+            //Debug.Log(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal));
             m_Rigidbody.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal),Vector3.back);
         }
 

@@ -1,45 +1,54 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerControls : NetworkBehaviour
 {
-    private enum Direction
-    {
-        Left,
-        Right,
-        None
-    }
+    [SerializeField] private ServerBarControls m_ServerControls;
 
     private Direction m_Direction;
 
-    void Update()
+    private void Update()
     {
         var oldDirection = m_Direction;
-        m_Direction = Direction.None;
 
-        if(Keyboard.current.leftArrowKey.wasPressedThisFrame) 
+        if (Keyboard.current.leftArrowKey.isPressed || Keyboard.current.leftArrowKey.wasPressedThisFrame)
         {
-            m_Direction= Direction.Left;
+            if (Keyboard.current.rightArrowKey.isPressed || Keyboard.current.rightArrowKey.wasPressedThisFrame)
+            {
+                m_Direction = Direction.None;
+            }
+            else
+            {
+                m_Direction = Direction.Left;
+            }
+        }
+        else if (Keyboard.current.rightArrowKey.isPressed || Keyboard.current.rightArrowKey.wasPressedThisFrame)
+        {
+            m_Direction = Direction.Right;
+        }
+        else
+        {
+            m_Direction = Direction.None;
         }
 
-        if (Keyboard.current.rightArrowKey.wasPressedThisFrame)
+        if (oldDirection != m_Direction)
         {
-            m_Direction = m_Direction == Direction.Left ? Direction.None: Direction.Right;
-        }
-
-        if(oldDirection!=m_Direction)
-        {
-            MoveBarServerRpc(m_Direction);
+            ChangePlayerBarDIrectionServerRpc(m_Direction);
         }
     }
 
-
-    [ServerRpc]
-    private void MoveBarServerRpc(Direction direction)
+    [ServerRpc(RequireOwnership =false)]
+    private void ChangePlayerBarDIrectionServerRpc(Direction direction, ServerRpcParams serverRpcParams = default)
     {
+        m_ServerControls.ChangePlayerBarDirectionServerRpc(direction, serverRpcParams.Receive.SenderClientId);
 
     }
+
+}
+public enum Direction
+{
+    Left,
+    Right,
+    None
 }

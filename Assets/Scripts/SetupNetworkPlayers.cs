@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class SetupNetworkPlayers : NetworkBehaviour
 {
-    
+    [SerializeField] private PlayerControls m_PlayerControls;
+    [SerializeField] private ServerBarControls m_ServerControls;
+
 
     public override void OnNetworkSpawn()
     {
@@ -19,5 +21,20 @@ public class SetupNetworkPlayers : NetworkBehaviour
             //give player2
             return;
         }
+    }
+
+    private void Start()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback += (x) =>
+        {
+            if (NetworkManager.Singleton.ConnectedClientsIds.Count > 1) { ForceConfig(); }
+        };
+    }
+
+
+    [ContextMenu("Debug force config Players")]
+    private void ForceConfig()
+    {
+        m_ServerControls.SetupPlayers(NetworkManager.Singleton.ConnectedClientsIds[0], NetworkManager.Singleton.ConnectedClientsIds[^1]);
     }
 }
