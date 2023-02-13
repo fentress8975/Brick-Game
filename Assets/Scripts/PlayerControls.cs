@@ -38,7 +38,7 @@ public class PlayerControls : NetworkBehaviour
         }
     }
 
-    [ServerRpc(RequireOwnership =false)]
+    [ServerRpc(RequireOwnership = false)]
     private void ChangePlayerBarDIrectionServerRpc(Direction direction, ServerRpcParams serverRpcParams = default)
     {
         m_ServerControls.ChangePlayerBarDirectionServerRpc(direction, serverRpcParams.Receive.SenderClientId);

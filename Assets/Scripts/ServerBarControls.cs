@@ -1,4 +1,3 @@
-using Unity.Netcode;
 using UnityEngine;
 
 public class ServerBarControls : MonoBehaviour
@@ -18,11 +17,11 @@ public class ServerBarControls : MonoBehaviour
     public void ChangePlayerBarDirectionServerRpc(Direction direction, ulong id)
     {
         ulong clientId = id;
-        if(clientId == m_Player1Id)
+        if (clientId == m_Player1Id)
         {
             m_Player1.ChangeDirection(direction);
         }
-        else if(clientId == m_Player2Id)
+        else if (clientId == m_Player2Id)
         {
             m_Player2.ChangeDirection(direction);
         }

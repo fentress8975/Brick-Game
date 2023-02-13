@@ -1,4 +1,3 @@
-using Unity.Netcode;
 using UnityEngine;
 
 public class SingletonMono<T> : MonoBehaviour where T : Component

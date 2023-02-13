@@ -1,17 +1,18 @@
+using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerBall : NetworkBehaviour
 {
+    public PlayerBar Bar { get => m_Bar; }
+
     [SerializeField] private NetworkVariable<float> m_BallSpeed = new(0);
     [SerializeField] private NetworkVariable<float> m_MaxSpeed = new(5);
     [SerializeField] private NetworkVariable<Vector2> m_StartPosition = new();
-
-    private Rigidbody m_Rigidbody;
-
+    [SerializeField] private NetworkVariable<float> m_Penalty = new(1.5f);
     [SerializeField] private NetworkVariable<ulong> m_PlayerId = new();
 
-
+    private Rigidbody m_Rigidbody;
     [SerializeField] private PlayerBar m_Bar;
 
     private void Start()
@@ -30,7 +31,6 @@ public class PlayerBall : NetworkBehaviour
         {
             return;
         }
-
         Move();
     }
 
@@ -43,18 +43,30 @@ public class PlayerBall : NetworkBehaviour
     {
         Collider _collider = collision.collider;
         Vector3 _collisionPoint = _collider.ClosestPointOnBounds(transform.position) + transform.TransformDirection(Vector3.back * 5);
-        Ray _directionRay = new(_collisionPoint,transform.TransformDirection(Vector3.forward));
-
-        if (_collider.Raycast(_directionRay,out RaycastHit hitInfo, Mathf.Infinity))
+        Ray _directionRay = new(_collisionPoint, transform.TransformDirection(Vector3.forward));
+        if (_collider.Raycast(_directionRay, out RaycastHit hitInfo, Mathf.Infinity))
         {
-            //EditorLogger.Log("RayCast");
-            //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 10, Color.red, 10);
-            //Debug.DrawRay(hitInfo.point, hitInfo.normal * 10, Color.green, 10);
-            //Debug.DrawRay(hitInfo.point, Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal) * 10, Color.blue, 10);
-            //Debug.Log(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal));
-            m_Rigidbody.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal),Vector3.back);
+            m_Rigidbody.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal), Vector3.back);
         }
+    }
 
+    public void ResetBall(BallCatcher caller)
+    {
+        transform.SetPositionAndRotation(Bar.transform.position + new Vector3(0, 0.5f, 0), transform.rotation);
+        StartCoroutine(HoldBall());
+    }
+    private IEnumerator HoldBall()
+    {
+        float oldSpeed = m_BallSpeed.Value;
+        m_BallSpeed.Value = 0;
+        gameObject.transform.SetParent(m_Bar.transform);
+        yield return new WaitForSeconds(m_Penalty.Value);
+        ReleaseBall();
+        m_BallSpeed.Value = oldSpeed;
+    }
+    private void ReleaseBall()
+    {
+        gameObject.transform.SetParent(null);
     }
 
     [ClientRpc]

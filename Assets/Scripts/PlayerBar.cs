@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerBar : NetworkBehaviour
 {
-    [SerializeField]private NetworkVariable<Direction> m_DirectionServer = new(Direction.None);
+    [SerializeField] private NetworkVariable<Direction> m_DirectionServer = new(Direction.None);
     private NetworkVariable<float> m_MaxSpeed = new(5f);
     private NetworkVariable<float> m_CurrentSpeed = new(0);
 
