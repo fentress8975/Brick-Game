@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -9,7 +10,7 @@ using UnityEngine.UI;
 
 public class NetworkSetup : SingletonMono<NetworkSetup>
 {
-    private const string DEFAULT_ADDRESS = "192.168.0.1";
+    private const string DEFAULT_ADDRESS = "127.0.0.1";
     private const string DEFAULT_PORT = "7777";
 
     [SerializeField] private MainMenuUI m_MainMenuUI;
@@ -31,6 +32,9 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
 
         m_StartHostButton.onClick.AddListener(() =>
         {
+#if UNITY_EDITOR
+            ChangeServerAdress(DEFAULT_ADDRESS);
+#else
             string localIP;
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
             {
@@ -39,6 +43,7 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
                 localIP = endPoint.Address.ToString();
             }
             ChangeServerAdress(localIP);
+#endif
 
             if (NetworkManager.Singleton.StartHost())
             {

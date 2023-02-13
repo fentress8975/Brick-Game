@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3946420954504321257}
   - component: {fileID: 3946420954504321256}
   - component: {fileID: 3946420954504321263}
+  - component: {fileID: 8402560296685011529}
   m_Layer: 0
   m_Name: Player2 Bar
   m_TagString: Untagged
@@ -89,6 +90,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1472741464778441bed39359c5f4a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_DirectionServer:
+    m_InternalValue: 2
+--- !u!65 &8402560296685011529
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3946420954504321259}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.6557984, y: 0.4361092, z: 0.4}
+  m_Center: {x: 0, y: 0.018054597, z: 0}
 --- !u!1001 &3946420954634020294
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -151,21 +167,3 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 027d15c7706d3484a91f8d65e5fe556a, type: 3}
   m_PrefabInstance: {fileID: 3946420954634020294}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &4181004166070753431 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 027d15c7706d3484a91f8d65e5fe556a, type: 3}
-  m_PrefabInstance: {fileID: 3946420954634020294}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &7358596793045495808
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4181004166070753431}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1.6557984, y: 0.4361092, z: 0.4}
-  m_Center: {x: 0, y: 0.018054597, z: 0}

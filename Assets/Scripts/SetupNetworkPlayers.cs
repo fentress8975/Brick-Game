@@ -20,6 +20,7 @@ public class SetupNetworkPlayers : NetworkBehaviour
         {
             //give player2
             return;
+            
         }
     }
 
@@ -27,13 +28,15 @@ public class SetupNetworkPlayers : NetworkBehaviour
     {
         NetworkManager.Singleton.OnClientConnectedCallback += (x) =>
         {
-            if (NetworkManager.Singleton.ConnectedClientsIds.Count > 1) { ForceConfig(); }
+            if (NetworkManager.Singleton.ConnectedClientsIds.Count > 1) { ConfigPlayers(); }
         };
+
+        ConfigPlayers();
     }
 
 
     [ContextMenu("Debug force config Players")]
-    private void ForceConfig()
+    private void ConfigPlayers()
     {
         m_ServerControls.SetupPlayers(NetworkManager.Singleton.ConnectedClientsIds[0], NetworkManager.Singleton.ConnectedClientsIds[^1]);
     }

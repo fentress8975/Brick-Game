@@ -1865,6 +1865,10 @@ PrefabInstance:
       value: Port InputField
       objectReference: {fileID: 0}
     - target: {fileID: 5348906870363046564, guid: 7459e2e0897efde4d9100ec52bdb8baf, type: 3}
+      propertyPath: m_Text
+      value: 127.0.0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5348906870363046564, guid: 7459e2e0897efde4d9100ec52bdb8baf, type: 3}
       propertyPath: m_CharacterLimit
       value: 15
       objectReference: {fileID: 0}
