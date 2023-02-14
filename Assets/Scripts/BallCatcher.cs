@@ -1,12 +1,17 @@
+using System.Runtime.CompilerServices;
+using Unity.Netcode;
 using UnityEngine;
 
-public class BallCatcher : MonoBehaviour
+public class BallCatcher : NetworkBehaviour
 {
     private void OnTriggerEnter(Collider collider)
     {
-        if (collider.gameObject.TryGetComponent(out PlayerBall ball))
+        if (IsHost)
         {
-            ball.ResetBall(this);
+            if (collider.gameObject.TryGetComponent(out PlayerBall ball))
+            {
+                ball.ResetBall();
+            }
         }
     }
 }

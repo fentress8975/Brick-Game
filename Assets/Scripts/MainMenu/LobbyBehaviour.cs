@@ -44,7 +44,7 @@ public class LobbyBehaviour : NetworkBehaviour
     {
         if (m_NetworkManager.ConnectedClientsIds.Count != 2)
         {
-            EditorLogger.Log("Нужно 2 игрока");
+            EditorLogger.Log("РќСѓР¶РЅРѕ 2 РёРіСЂРѕРєР°");
             return;
         }
         else

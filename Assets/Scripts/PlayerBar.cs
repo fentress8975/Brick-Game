@@ -1,3 +1,4 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -29,4 +30,13 @@ public class PlayerBar : NetworkBehaviour
         m_DirectionServer.Value = direction;
     }
 
+    internal void Stop()
+    {
+        throw new NotImplementedException();
+    }
+
+    internal void ResetBar()
+    {
+        throw new NotImplementedException();
+    }
 }

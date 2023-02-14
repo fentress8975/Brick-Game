@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,7 +9,6 @@ public class PlayerBall : NetworkBehaviour
 
     [SerializeField] private NetworkVariable<float> m_BallSpeed = new(0);
     [SerializeField] private NetworkVariable<float> m_MaxSpeed = new(5);
-    [SerializeField] private NetworkVariable<Vector2> m_StartPosition = new();
     [SerializeField] private NetworkVariable<float> m_Penalty = new(1.5f);
     [SerializeField] private NetworkVariable<ulong> m_PlayerId = new();
 
@@ -50,38 +50,32 @@ public class PlayerBall : NetworkBehaviour
         }
     }
 
-    public void ResetBall(BallCatcher caller)
+    public void ResetBall()
     {
-        transform.SetPositionAndRotation(Bar.transform.position + new Vector3(0, 0.5f, 0), transform.rotation);
-        StartCoroutine(HoldBall());
+        if (IsHost)
+        {
+            transform.SetPositionAndRotation(Bar.transform.position + new Vector3(0, 0.5f, 0), transform.rotation);
+            StartCoroutine(HoldBall());
+        }
     }
     private IEnumerator HoldBall()
     {
-        float oldSpeed = m_BallSpeed.Value;
         m_BallSpeed.Value = 0;
         gameObject.transform.SetParent(m_Bar.transform);
         yield return new WaitForSeconds(m_Penalty.Value);
         ReleaseBall();
-        m_BallSpeed.Value = oldSpeed;
+        m_BallSpeed.Value = m_MaxSpeed.Value;
     }
     private void ReleaseBall()
     {
-        gameObject.transform.SetParent(null);
+            gameObject.transform.SetParent(null);
     }
 
-    [ClientRpc]
-    public void RestartBallClientRpc()
+    public void Stop()
     {
-
-    }
-    [ClientRpc]
-    public void StopBallClientRpc()
-    {
-        m_BallSpeed.Value = 0;
-    }
-    [ClientRpc]
-    public void StartBallClientRpc()
-    {
-        m_BallSpeed.Value = m_MaxSpeed.Value;
+        if (IsHost)
+        {
+            m_BallSpeed.Value = 0;
+        }
     }
 }
