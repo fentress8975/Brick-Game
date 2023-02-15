@@ -24,6 +24,8 @@ public class GameManager : NetworkBehaviour
         {
             m_NetworkManager = NetworkManager.Singleton;
             m_NetworkManager.OnClientDisconnectCallback += PlayerDisconnect;
+            m_PlayersBrickHandler.OnPlayer1Victory += Player1Victory;
+            m_PlayersBrickHandler.OnPlayer2Victory += Player2Victory;
         }
     }
 

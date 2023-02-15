@@ -39,12 +39,15 @@ public class BrickGenerator : NetworkBehaviour
         {
             for (int j = 0; j < pattern.GetLength(1); j++)
             {
-                Vector3 _position = new(_x, _y, 0);
-                Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
-                brick.gameObject.name = $"P1 {i}{j}";
-                brick.GetComponent<NetworkObject>().Spawn();
-                brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
-                bricks.Add(brick);
+                if (pattern[i, j])
+                {
+                    Vector3 _position = new(_x, _y, 0);
+                    Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
+                    brick.gameObject.name = $"P1 {i}{j}";
+                    brick.GetComponent<NetworkObject>().Spawn();
+                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
+                    bricks.Add(brick);
+                }
                 _x++;
             }
             _y--;
@@ -63,12 +66,15 @@ public class BrickGenerator : NetworkBehaviour
         {
             for (int j = 0; j < pattern.GetLength(1); j++)
             {
-                Vector3 _position = new(_x, _y, 0);
-                Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
-                brick.gameObject.name = $"P2 {i}{j}";
-                brick.GetComponent<NetworkObject>().Spawn();
-                brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
-                bricks.Add(brick);
+                if (pattern[i,j])
+                {
+                    Vector3 _position = new(_x, _y, 0);
+                    Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
+                    brick.gameObject.name = $"P2 {i}{j}";
+                    brick.GetComponent<NetworkObject>().Spawn();
+                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
+                    bricks.Add(brick);
+                }
                 _x--;
             }
             _y--;

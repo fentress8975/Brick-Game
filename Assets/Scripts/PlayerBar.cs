@@ -26,7 +26,6 @@ public class PlayerBar : NetworkBehaviour
 
     public void ChangeDirection(Direction direction)
     {
-        EditorLogger.Log(gameObject.name);
         m_DirectionServer.Value = direction;
     }
 

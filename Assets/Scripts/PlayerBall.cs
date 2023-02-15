@@ -47,8 +47,6 @@ public class PlayerBall : NetworkBehaviour
         {
             m_Rigidbody.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal), Vector3.back);
         }
-
-        
     }
 
     //private void OnTriggerEnter(Collider other)
