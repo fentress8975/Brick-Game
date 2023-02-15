@@ -1,12 +1,12 @@
 using System;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayersBrickHandler : NetworkBehaviour
 {
-   public Action OnPlayer1Victory;
-   public Action OnPlayer2Victory;
+    public Action OnPlayer1Victory;
+    public Action OnPlayer2Victory;
 
     [SerializeField] private BrickGenerator m_BrickGenerator;
     private PlayersBricks m_PlayersBrickList;
@@ -29,7 +29,7 @@ public class PlayersBrickHandler : NetworkBehaviour
 
     private void CheckVictoryConditionP1()
     {
-        if(m_PlayersBrickList.P1Bricks.Count == 0)
+        if (m_PlayersBrickList.P1Bricks.Count == 0)
         {
             OnPlayer1Victory?.Invoke();
         }
@@ -41,5 +41,19 @@ public class PlayersBrickHandler : NetworkBehaviour
         {
             OnPlayer2Victory?.Invoke();
         }
+    }
+
+    [ContextMenu("GenerateDebug")]
+    private void GenerateArea()
+    {
+        bool[,] bools = new bool[6, 8];
+        for (int i = 0; i < bools.GetLength(0); i++)
+        {
+            for (int j = 0; j < bools.GetLength(1); j++)
+            {
+                bools[i, j] = UnityEngine.Random.value > 0.5f;
+            }
+        }
+        GeneratePlayerAreasSymmetrical(bools);
     }
 }

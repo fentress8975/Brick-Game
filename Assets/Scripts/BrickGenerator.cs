@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class BrickGenerator : NetworkBehaviour
 {
-    [SerializeField] private GameObject m_BrickPrefab;
+    [SerializeField] private Brick m_BrickPrefab;
+    [SerializeField] private Transform m_BrickParent;
 
     public PlayersBricks GenerateSymmetrically(bool[,] pattern)
     {
@@ -15,8 +16,12 @@ public class BrickGenerator : NetworkBehaviour
             {
                 List<Brick> p1 = GeneratePlayer1Area(pattern);
                 List<Brick> p2 = GeneratePlayer2Area(pattern);
+                return new PlayersBricks(p1, p2);
             }
-            return new PlayersBricks(null , null);
+            else
+            {
+                return new PlayersBricks(null, null);
+            }
         }
         else
         {
@@ -35,11 +40,15 @@ public class BrickGenerator : NetworkBehaviour
             for (int j = 0; j < pattern.GetLength(1); j++)
             {
                 Vector3 _position = new(_x, _y, 0);
-                GameObject go = Instantiate(m_BrickPrefab, Vector3.zero, m_BrickPrefab.transform.rotation);
-                go.GetComponent<NetworkObject>().Spawn();
+                Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
+                brick.gameObject.name = $"P1 {i}{j}";
+                brick.GetComponent<NetworkObject>().Spawn();
+                brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
+                bricks.Add(brick);
                 _x++;
-                _y--;
             }
+            _y--;
+            _x = Player1BrickArea.Max_X;
         }
         return bricks;
     }
@@ -47,26 +56,30 @@ public class BrickGenerator : NetworkBehaviour
     private List<Brick> GeneratePlayer2Area(bool[,] pattern)
     {
         List<Brick> bricks = new List<Brick>();
-        int _x = Player1BrickArea.Max_X;
-        int _y = Player1BrickArea.Max_Y;
+        int _x = Player2BrickArea.Max_X;
+        int _y = Player2BrickArea.Max_Y;
 
         for (int i = 0; i < pattern.GetLength(0); i++)
         {
             for (int j = 0; j < pattern.GetLength(1); j++)
             {
                 Vector3 _position = new(_x, _y, 0);
-                GameObject go = Instantiate(m_BrickPrefab, Vector3.zero, m_BrickPrefab.transform.rotation);
-                go.GetComponent<NetworkObject>().Spawn();
+                Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
+                brick.gameObject.name = $"P2 {i}{j}";
+                brick.GetComponent<NetworkObject>().Spawn();
+                brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
+                bricks.Add(brick);
                 _x--;
-                _y--;
             }
+            _y--;
+            _x = Player2BrickArea.Max_X;
         }
         return bricks;
     }
 
     private bool VerifiPattern(bool[,] pattern)
     {
-        if (pattern.GetLength(0) <= Math.Abs(PlayerBrickArea.X) && pattern.GetLength(1) <= PlayerBrickArea.Y)
+        if (pattern.GetLength(0) <= Math.Abs(PlayerBrickArea.Y) && pattern.GetLength(1) <= PlayerBrickArea.X)
         {
             return true;
         }
