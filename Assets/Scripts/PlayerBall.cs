@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
@@ -48,7 +47,17 @@ public class PlayerBall : NetworkBehaviour
         {
             m_Rigidbody.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal), Vector3.back);
         }
+
+        
     }
+
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (collision.gameObject.TryGetComponent(out Brick brick))
+    //    {
+    //        brick.Destroy(this);
+    //    }
+    //}
 
     public void ResetBall()
     {
@@ -68,7 +77,7 @@ public class PlayerBall : NetworkBehaviour
     }
     private void ReleaseBall()
     {
-            gameObject.transform.SetParent(null);
+        gameObject.transform.SetParent(null);
     }
 
     public void Stop()
