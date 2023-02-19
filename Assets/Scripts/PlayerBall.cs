@@ -49,14 +49,6 @@ public class PlayerBall : NetworkBehaviour
         }
     }
 
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if (collision.gameObject.TryGetComponent(out Brick brick))
-    //    {
-    //        brick.Destroy(this);
-    //    }
-    //}
-
     public void ResetBall()
     {
         if (IsHost)
@@ -82,6 +74,7 @@ public class PlayerBall : NetworkBehaviour
     {
         if (IsHost)
         {
+            StopAllCoroutines();
             m_BallSpeed.Value = 0;
         }
     }

@@ -51,6 +51,7 @@ public class LobbyBehaviour : NetworkBehaviour
         {
             if (IsHost && !string.IsNullOrEmpty(m_SceneName))
             {
+                SavePlayersName();
                 var status = NetworkManager.SceneManager.LoadScene(m_SceneName, LoadSceneMode.Single);
                 if (status != SceneEventProgressStatus.Started)
                 {
@@ -59,6 +60,13 @@ public class LobbyBehaviour : NetworkBehaviour
                 }
             }
         }
+    }
+
+
+    private void SavePlayersName()
+    {
+        PlayerPrefs.SetString(m_Player1NickName.text, "Player1Nickname");
+        PlayerPrefs.SetString(m_Player2NickName.text, "Player2Nickname");
     }
 
     public override void OnNetworkSpawn()

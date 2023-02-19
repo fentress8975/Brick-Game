@@ -1,7 +1,6 @@
 using System;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayersBrickHandler : NetworkBehaviour
 {
@@ -11,11 +10,16 @@ public class PlayersBrickHandler : NetworkBehaviour
     [SerializeField] private BrickGenerator m_BrickGenerator;
     private PlayersBricks m_PlayersBrickList;
 
-    public void GeneratePlayerAreasSymmetrical(bool[,] pattern)
+#if UNITY_EDITOR
+    [SerializeField] private GameManager m_GameManager;
+#endif
+
+    public void GeneratePlayerAreasSymmetrical()
     {
+        ClearBricks();
         if (IsHost)
         {
-            m_PlayersBrickList = m_BrickGenerator.GenerateSymmetrically(pattern);
+            m_PlayersBrickList = m_BrickGenerator.GenerateSymmetrically(GenerateRandomAreaBricks());
             foreach (var item in m_PlayersBrickList.P1Bricks)
             {
                 item.OnDestruction += CheckVictoryConditionP1;
@@ -27,24 +31,50 @@ public class PlayersBrickHandler : NetworkBehaviour
         }
     }
 
-    private void CheckVictoryConditionP1()
+    private void ClearBricks()
     {
+        if (m_PlayersBrickList != null)
+        {
+            if (m_PlayersBrickList.P1Bricks != null)
+            {
+                foreach (var item in m_PlayersBrickList.P1Bricks)
+                {
+                    item.OnNetworkDespawn();
+                    Destroy(item.gameObject);
+                }
+            }
+            if (m_PlayersBrickList.P2Bricks != null)
+            {
+                foreach (var item in m_PlayersBrickList.P2Bricks)
+                {
+                    item.OnNetworkDespawn();
+                    Destroy(item.gameObject);
+                }
+            }
+        }
+    }
+
+    private void CheckVictoryConditionP1(Brick obj)
+    {
+        m_PlayersBrickList.P1Bricks.Remove(obj);
         if (m_PlayersBrickList.P1Bricks.Count == 0)
         {
+            EditorLogger.Log($"{this.name} Player1 Victory!");
             OnPlayer1Victory?.Invoke();
         }
     }
 
-    private void CheckVictoryConditionP2()
+    private void CheckVictoryConditionP2(Brick obj)
     {
+        m_PlayersBrickList.P2Bricks.Remove(obj);
         if (m_PlayersBrickList.P2Bricks.Count == 0)
         {
+            EditorLogger.Log($"{this.name} Player2 Victory!");
             OnPlayer2Victory?.Invoke();
         }
     }
 
-    [ContextMenu("GenerateDebug")]
-    private void GenerateArea()
+    private bool[,] GenerateRandomAreaBricks()
     {
         bool[,] bools = new bool[6, 8];
         for (int i = 0; i < bools.GetLength(0); i++)
@@ -54,6 +84,16 @@ public class PlayersBrickHandler : NetworkBehaviour
                 bools[i, j] = UnityEngine.Random.value > 0.5f;
             }
         }
-        GeneratePlayerAreasSymmetrical(bools);
+        return bools;
     }
+#if UNITY_EDITOR
+    [ContextMenu("P1 victory")]
+    private void KillBricks()
+    {
+        foreach (var item in m_PlayersBrickList.P1Bricks)
+        {
+            item.Kill();
+        }
+    }
+#endif
 }

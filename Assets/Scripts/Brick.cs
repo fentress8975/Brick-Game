@@ -4,19 +4,21 @@ using UnityEngine;
 
 public class Brick : NetworkBehaviour
 {
-    public Action OnDestruction;
+    public Action<Brick> OnDestruction;
 
     private void OnCollisionEnter(Collision collision)
     {
-        OnDestruction?.Invoke();
+        OnDestruction?.Invoke(this);
         OnNetworkDespawn();
         Destroy(gameObject);
     }
 
-    public void Destroy(PlayerBall caller)
+#if UNITY_EDITOR
+    public void Kill()
     {
-        OnDestruction?.Invoke();
+        OnDestruction?.Invoke(this);
         OnNetworkDespawn();
         Destroy(gameObject);
     }
+#endif
 }

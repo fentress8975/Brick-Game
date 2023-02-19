@@ -66,7 +66,7 @@ public class BrickGenerator : NetworkBehaviour
         {
             for (int j = 0; j < pattern.GetLength(1); j++)
             {
-                if (pattern[i,j])
+                if (pattern[i, j])
                 {
                     Vector3 _position = new(_x, _y, 0);
                     Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);

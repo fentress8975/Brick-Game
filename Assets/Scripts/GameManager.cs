@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -15,7 +13,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private PlayerBar m_P1Bar;
     [SerializeField] private PlayerBar m_P2Bar;
 
-    private bool[,] m_Pattern;
+    [SerializeField] private bool[,] m_Pattern;
     private NetworkManager m_NetworkManager;
 
     private void Start()
@@ -24,8 +22,6 @@ public class GameManager : NetworkBehaviour
         {
             m_NetworkManager = NetworkManager.Singleton;
             m_NetworkManager.OnClientDisconnectCallback += PlayerDisconnect;
-            m_PlayersBrickHandler.OnPlayer1Victory += Player1Victory;
-            m_PlayersBrickHandler.OnPlayer2Victory += Player2Victory;
         }
     }
 
@@ -48,27 +44,34 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void StartGame(ulong p1, ulong p2, bool[,] pattern)
+    public void SetupPlayers(ulong p1, ulong p2)
     {
         if (IsHost)
         {
             m_Player1ID = p1;
             m_Player2ID = p2;
-            m_Pattern = pattern;
-            m_PlayersBrickHandler.GeneratePlayerAreasSymmetrical(pattern);
             m_PlayersBrickHandler.OnPlayer1Victory += Player1Victory;
             m_PlayersBrickHandler.OnPlayer2Victory += Player2Victory;
+            StartGame();
         }
+    }
+
+    private void StartGame()
+    {
+        ResetPlayersObjects();
+        m_PlayersBrickHandler.GeneratePlayerAreasSymmetrical();
     }
 
     private void Player1Victory()
     {
+        EditorLogger.Log("P1 win");
         StopGame();
         m_GameUI.ShowVictoryScreenP1();
     }
 
     private void Player2Victory()
     {
+        EditorLogger.Log("P2 win");
         StopGame();
         m_GameUI.ShowVictoryScreenP2();
     }
@@ -88,15 +91,28 @@ public class GameManager : NetworkBehaviour
     {
         if (IsHost)
         {
-            m_P1Ball.ResetBall();
-            m_P1Bar.ResetBar();
-            m_P2Ball.ResetBall();
-            m_P2Bar.ResetBar();
+            ResetPlayersObjects();
+            StartGame();
         }
+    }
+
+    private void ResetPlayersObjects()
+    {
+        m_P1Ball.ResetBall();
+        m_P1Bar.ResetBar();
+        m_P2Ball.ResetBall();
+        m_P2Bar.ResetBar();
     }
 
     public void EndGame()
     {
         GameNetworkHandler.Singletone.CloseGameConnection();
     }
+
+#if UNITY_EDITOR
+    public void DebbugPattern(bool[,] pattern)
+    {
+        m_Pattern = pattern;
+    }
+#endif
 }
