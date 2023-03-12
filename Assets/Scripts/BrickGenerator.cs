@@ -6,7 +6,9 @@ using UnityEngine;
 public class BrickGenerator : NetworkBehaviour
 {
     [SerializeField] private Brick m_BrickPrefab;
-    [SerializeField] private Transform m_BrickParent;
+    [SerializeField] private BrickClient m_BrickClientPrefab;
+    [SerializeField] private Transform m_BrickClientParent;
+    [SerializeField] private Transform m_BrickParentClient;
 
     public PlayersBricks GenerateSymmetrically(bool[,] pattern)
     {
@@ -29,6 +31,72 @@ public class BrickGenerator : NetworkBehaviour
         }
     }
 
+    internal PlayersBricksClient GenerateSymmetricallyClient(bool[,] brickListPattern, ulong playerID)
+    {
+        if(playerID == 1)
+        {
+            List<BrickClient> p1 = GeneratePlayer1AreaClient(brickListPattern);
+            return new PlayersBricksClient(p1, null);
+        }
+        else
+        {
+            List<BrickClient> p2 = GeneratePlayer2AreaClient(brickListPattern);
+            return new PlayersBricksClient(null, p2);
+        }
+    }
+
+    private List<BrickClient> GeneratePlayer1AreaClient(bool[,] pattern)
+    {
+        List<BrickClient> bricks = new List<BrickClient>();
+        int _x = Player1BrickArea.Max_X;
+        int _y = Player1BrickArea.Max_Y;
+
+        for (int i = 0; i < pattern.GetLength(0); i++)
+        {
+            for (int j = 0; j < pattern.GetLength(1); j++)
+            {
+                if (pattern[i, j])
+                {
+                    Vector3 _position = new(_x, _y, 0);
+                    BrickClient brick = Instantiate(m_BrickClientPrefab, _position, m_BrickClientPrefab.transform.rotation);
+                    brick.gameObject.name = $"P1 {i}{j}";
+                    brick.transform.SetParent(m_BrickClientParent);
+                    bricks.Add(brick);
+                }
+                _x++;
+            }
+            _y--;
+            _x = Player1BrickArea.Max_X;
+        }
+        return bricks;
+    }
+
+    private List<BrickClient> GeneratePlayer2AreaClient(bool[,] pattern)
+    {
+        List<BrickClient> bricks = new List<BrickClient>();
+        int _x = Player2BrickArea.Max_X;
+        int _y = Player2BrickArea.Max_Y;
+
+        for (int i = 0; i < pattern.GetLength(0); i++)
+        {
+            for (int j = 0; j < pattern.GetLength(1); j++)
+            {
+                if (pattern[i, j])
+                {
+                    Vector3 _position = new(_x, _y, 0);
+                    BrickClient brick = Instantiate(m_BrickClientPrefab, _position, m_BrickClientPrefab.transform.rotation);
+                    brick.gameObject.name = $"P2 {i}{j}";
+                    brick.transform.SetParent(m_BrickClientParent);
+                    bricks.Add(brick);
+                }
+                _x--;
+            }
+            _y--;
+            _x = Player2BrickArea.Max_X;
+        }
+        return bricks;
+    }
+
     private List<Brick> GeneratePlayer1Area(bool[,] pattern)
     {
         List<Brick> bricks = new List<Brick>();
@@ -45,7 +113,7 @@ public class BrickGenerator : NetworkBehaviour
                     Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
                     brick.gameObject.name = $"P1 {i}{j}";
                     brick.GetComponent<NetworkObject>().Spawn();
-                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
+                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickClientParent);
                     bricks.Add(brick);
                 }
                 _x++;
@@ -72,7 +140,7 @@ public class BrickGenerator : NetworkBehaviour
                     Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
                     brick.gameObject.name = $"P2 {i}{j}";
                     brick.GetComponent<NetworkObject>().Spawn();
-                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickParent);
+                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickClientParent);
                     bricks.Add(brick);
                 }
                 _x--;
@@ -133,3 +201,17 @@ public class PlayersBricks
     private List<Brick> m_Player2Bricks;
 }
 
+public class PlayersBricksClient
+{
+    public PlayersBricksClient(List<BrickClient> player1, List<BrickClient> player2)
+    {
+        m_Player1Bricks = player1;
+        m_Player2Bricks = player2;
+    }
+
+    public List<BrickClient> P1Bricks { get => m_Player1Bricks; }
+    public List<BrickClient> P2Bricks { get => m_Player2Bricks; }
+
+    private List<BrickClient> m_Player1Bricks;
+    private List<BrickClient> m_Player2Bricks;
+}

@@ -8,13 +8,14 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private GameUI m_GameUI;
     [SerializeField] private ulong m_Player1ID;
     [SerializeField] private ulong m_Player2ID;
-    [SerializeField] private PlayerBall m_P1Ball;
-    [SerializeField] private PlayerBall m_P2Ball;
-    [SerializeField] private PlayerBar m_P1Bar;
-    [SerializeField] private PlayerBar m_P2Bar;
+    [SerializeField] private PlayerServerBall m_P1Ball;
+    [SerializeField] private PlayerServerBall m_P2Ball;
+    [SerializeField] private PlayerServerBar m_P1Bar;
+    [SerializeField] private PlayerServerBar m_P2Bar;
 
     [SerializeField] private bool[,] m_Pattern;
     private NetworkManager m_NetworkManager;
+    private GameNetworkHandler m_GameNetworkHandler;
 
     private void Start()
     {
@@ -23,6 +24,7 @@ public class GameManager : NetworkBehaviour
             m_NetworkManager = NetworkManager.Singleton;
             m_NetworkManager.OnClientDisconnectCallback += PlayerDisconnect;
         }
+        m_GameNetworkHandler = GameNetworkHandler.Singletone;
     }
 
     private void PlayerDisconnect(ulong id)
@@ -44,15 +46,21 @@ public class GameManager : NetworkBehaviour
         }
     }
 
-    public void SetupPlayers(ulong p1, ulong p2)
+    public void SetupPlayers(PlayerServerBar p1Bar, PlayerServerBar p2Bar, PlayerServerBall p1Ball, PlayerServerBall p2Ball)
     {
         if (IsHost)
         {
-            m_Player1ID = p1;
-            m_Player2ID = p2;
+            m_Player1ID = m_GameNetworkHandler.Player1ID;
+            m_Player2ID = m_GameNetworkHandler.Player2ID;
+            m_P1Bar = p1Bar;
+            m_P2Bar = p2Bar;
+            m_P1Ball = p1Ball;
+            m_P2Ball = p2Ball;
             m_PlayersBrickHandler.OnPlayer1Victory += Player1Victory;
             m_PlayersBrickHandler.OnPlayer2Victory += Player2Victory;
-            StartGame();
+
+            m_P1Ball.Stop();
+            m_P2Ball.Stop();
         }
     }
 
@@ -82,8 +90,8 @@ public class GameManager : NetworkBehaviour
         {
             m_P1Ball.Stop();
             m_P2Ball.Stop();
-            m_P1Bar.Stop();
-            m_P2Bar.Stop();
+            m_P1Bar.StopClient();
+            m_P2Bar.StopClient();
         }
     }
 
@@ -99,9 +107,9 @@ public class GameManager : NetworkBehaviour
     private void ResetPlayersObjects()
     {
         m_P1Ball.ResetBall();
-        m_P1Bar.ResetBar();
+        m_P1Bar.ResetBarClient();
         m_P2Ball.ResetBall();
-        m_P2Bar.ResetBar();
+        m_P2Bar.ResetBarClient();
     }
 
     public void EndGame()

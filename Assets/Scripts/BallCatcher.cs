@@ -7,10 +7,14 @@ public class BallCatcher : NetworkBehaviour
     {
         if (IsHost)
         {
-            if (collider.gameObject.TryGetComponent(out PlayerBall ball))
+            if (collider.gameObject.TryGetComponent(out PlayerServerBall ballServer))
             {
-                ball.ResetBall();
+                ballServer.ResetBall();
             }
+        }
+        if (collider.gameObject.TryGetComponent(out PlayerClientBall ballLocal))
+        {
+            ballLocal.ResetBall();
         }
     }
 }

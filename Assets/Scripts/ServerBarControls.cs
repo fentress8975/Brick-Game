@@ -2,28 +2,21 @@ using UnityEngine;
 
 public class ServerBarControls : MonoBehaviour
 {
-    [SerializeField] private PlayerBar m_Player1;
-    [SerializeField] private PlayerBar m_Player2;
-    [SerializeField] private ulong m_Player1Id = 999;
-    [SerializeField] private ulong m_Player2Id = 999;
+    [SerializeField] private PlayerServerBar m_Player1ServerBar;
+    [SerializeField] private PlayerServerBar m_Player2ServerBar;
 
-
-    public void SetupPlayers(ulong player1, ulong player2)
-    {
-        m_Player1Id = player1;
-        m_Player2Id = player2;
-    }
-
-    public void ChangePlayerBarDirectionServerRpc(Direction direction, ulong id)
+    public void ChangePlayerBarDirectionServerRpc(ulong number, Direction direction, ulong id)
     {
         ulong clientId = id;
-        if (clientId == m_Player1Id)
+        if (clientId == GameNetworkHandler.Singletone.Player1ID)
         {
-            m_Player1.ChangeDirection(direction);
+            m_Player1ServerBar.ChangeDirectionClient(direction);
+            ClientBarReconciliation.Singletone.ReturnCompletedCommandClientRpc(number, m_Player1ServerBar.gameObject.transform.position, GameNetworkHandler.Singletone.Player1RpcParams);
         }
-        else if (clientId == m_Player2Id)
+        else if (clientId == GameNetworkHandler.Singletone.Player2ID)
         {
-            m_Player2.ChangeDirection(direction);
+            m_Player2ServerBar.ChangeDirectionClient(direction);
+            ClientBarReconciliation.Singletone.ReturnCompletedCommandClientRpc(number, m_Player2ServerBar.gameObject.transform.position, GameNetworkHandler.Singletone.Player2RpcParams);
         }
         else
         {

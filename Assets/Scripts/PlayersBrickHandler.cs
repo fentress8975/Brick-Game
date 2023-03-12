@@ -8,6 +8,7 @@ public class PlayersBrickHandler : NetworkBehaviour
     public Action OnPlayer2Victory;
 
     [SerializeField] private BrickGenerator m_BrickGenerator;
+    [SerializeField] private PlayersBrickClientHandler m_PlayersBrickClientHandler;
     private PlayersBricks m_PlayersBrickList;
 
 #if UNITY_EDITOR
@@ -16,10 +17,11 @@ public class PlayersBrickHandler : NetworkBehaviour
 
     public void GeneratePlayerAreasSymmetrical()
     {
-        ClearBricks();
         if (IsHost)
         {
-            m_PlayersBrickList = m_BrickGenerator.GenerateSymmetrically(GenerateRandomAreaBricks());
+            ClearBricks();
+            bool[,] pattern = GenerateRandomAreaBricks();
+            m_PlayersBrickList = m_BrickGenerator.GenerateSymmetrically(pattern);
             foreach (var item in m_PlayersBrickList.P1Bricks)
             {
                 item.OnDestruction += CheckVictoryConditionP1;
@@ -28,7 +30,18 @@ public class PlayersBrickHandler : NetworkBehaviour
             {
                 item.OnDestruction += CheckVictoryConditionP2;
             }
+
+            ulong p1 = 1;
+            ulong p2 = 2;
+            SendPatternClientRpc(pattern, p1, GameNetworkHandler.Singletone.Player1RpcParams);
+            SendPatternClientRpc(pattern, p2, GameNetworkHandler.Singletone.Player2RpcParams);
+
         }
+    }
+
+    private void GeneratePlayerSidedBricks(bool[,] pattern, ulong id)
+    {
+        m_PlayersBrickClientHandler.SetBrickList(pattern, id);
     }
 
     private void ClearBricks()
@@ -86,6 +99,13 @@ public class PlayersBrickHandler : NetworkBehaviour
         }
         return bools;
     }
+
+    [ClientRpc]
+    private void SendPatternClientRpc(bool[,] pattern, ulong id, ClientRpcParams clientRpcParams = default)
+    {
+        GeneratePlayerSidedBricks(pattern, id);
+    }
+
 #if UNITY_EDITOR
     [ContextMenu("P1 victory")]
     private void KillBricks()

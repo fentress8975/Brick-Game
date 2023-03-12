@@ -6,9 +6,15 @@ public class PlayerControls : NetworkBehaviour
 {
     [SerializeField] private ServerBarControls m_ServerControls;
 
-    private Direction m_Direction;
+    private Direction m_Direction = Direction.None;
+    private ClientBarReconciliation m_ClientReconciliation;
 
-    private void Update()
+    private void Start()
+    {
+        m_ClientReconciliation = ClientBarReconciliation.Singletone;
+    }
+
+    private void FixedUpdate()
     {
         var oldDirection = m_Direction;
 
@@ -31,18 +37,16 @@ public class PlayerControls : NetworkBehaviour
         {
             m_Direction = Direction.None;
         }
-
         if (oldDirection != m_Direction)
         {
-            ChangePlayerBarDIrectionServerRpc(m_Direction);
+            ChangePlayerBarDirectionServerRpc(m_ClientReconciliation.AddCommandToQueue(m_Direction, m_ClientReconciliation.PlayerLocalBar.gameObject.transform.position), m_Direction);
         }
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void ChangePlayerBarDIrectionServerRpc(Direction direction, ServerRpcParams serverRpcParams = default)
+    private void ChangePlayerBarDirectionServerRpc(ulong number, Direction direction, ServerRpcParams serverRpcParams = default)
     {
-        m_ServerControls.ChangePlayerBarDirectionServerRpc(direction, serverRpcParams.Receive.SenderClientId);
-
+        m_ServerControls.ChangePlayerBarDirectionServerRpc(number, direction, serverRpcParams.Receive.SenderClientId);
     }
 
 }

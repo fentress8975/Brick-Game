@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1224866103573392780}
   - component: {fileID: 1224866103573392771}
   - component: {fileID: 6116324571947879343}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player1 Bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ MonoBehaviour:
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
-  PositionThreshold: 0.001
+  PositionThreshold: 0.01
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
   InLocalSpace: 0
@@ -90,8 +90,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1472741464778441bed39359c5f4a34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_DirectionServer:
+  m_Direction:
     m_InternalValue: 2
+  m_MaxSpeed:
+    m_InternalValue: 5
+  m_CurrentSpeed:
+    m_InternalValue: 0
+  m_PenaltyCoff:
+    m_InternalValue: 1
+  m_isAlive:
+    m_InternalValue: 1
 --- !u!65 &6116324571947879343
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -156,9 +164,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 027d15c7706d3484a91f8d65e5fe556a, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 027d15c7706d3484a91f8d65e5fe556a, type: 3}
       propertyPath: m_Name
       value: Bar
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 027d15c7706d3484a91f8d65e5fe556a, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3451118302482216456, guid: 027d15c7706d3484a91f8d65e5fe556a, type: 3}
       propertyPath: m_Convex

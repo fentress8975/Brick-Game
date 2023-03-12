@@ -28,8 +28,10 @@ public class GameUI : NetworkBehaviour
         m_EndGameButton.onClick.AddListener(Disconnect);
         m_RematchButton.onClick.AddListener(RematchGame);
         m_SurrenderButton.onClick.AddListener(Surrender);
-
-        SetPlayersNicknamesClientRpc();
+        if (IsHost)
+        {
+            GetPlayersNicknamesServerRpc();
+        }
     }
 
     private void Surrender()
@@ -93,9 +95,14 @@ public class GameUI : NetworkBehaviour
         m_VictoryPanel.SetActive(true);
     }
     [ClientRpc]
-    private void SetPlayersNicknamesClientRpc()
+    private void SetPlayersNicknamesClientRpc(FixedString32Bytes p1, FixedString32Bytes p2)
     {
-        SetPlayersNicknames(new(PlayerPrefs.GetString("Player1Nickname")),
-                            new(PlayerPrefs.GetString("Player2Nickname")));
+        SetPlayersNicknames(p1, p2);
+    }
+    [ServerRpc]
+    private void GetPlayersNicknamesServerRpc()
+    {
+        SetPlayersNicknamesClientRpc(new(PlayerPrefs.GetString("Player1Nickname")),
+                                     new(PlayerPrefs.GetString("Player2Nickname")));
     }
 }

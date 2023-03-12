@@ -8,9 +8,12 @@ public class Brick : NetworkBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        OnDestruction?.Invoke(this);
-        OnNetworkDespawn();
-        Destroy(gameObject);
+        if (collision.gameObject.TryGetComponent(out PlayerServerBall _))
+        {
+            OnDestruction?.Invoke(this);
+            OnNetworkDespawn();
+            Destroy(gameObject);
+        }
     }
 
 #if UNITY_EDITOR
