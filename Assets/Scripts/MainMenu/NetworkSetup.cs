@@ -5,6 +5,7 @@ using System.Net;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,14 +14,10 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
     private const string DEFAULT_ADDRESS = "127.0.0.1";
     private const string DEFAULT_PORT = "7777";
 
-    [SerializeField] private MainMenuUI m_MainMenuUI;
+    private NetworkManager m_NetworkManager;
+    private UnityTransport m_UTransport;
 
-    [SerializeField] private Button m_StartHostButton;
-    [SerializeField] private Button m_StartClientButton;
-    [SerializeField] private TMP_InputField m_HostPortInputField;
-    [SerializeField] private TMP_InputField m_ClientIPAdressInputField;
-    [SerializeField] private TMP_InputField m_ClientPortInputField;
-    [SerializeField] private TMP_InputField m_PlayerNickNameInputField;
+    [SerializeField] private MainMenuUI m_MainMenuUI;
 
     //DebugArea
     [SerializeField] private TextMeshProUGUI m_IPAdress;
@@ -28,12 +25,19 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
 
     private void Start()
     {
+        m_NetworkManager = NetworkManager.Singleton;
+        m_UTransport = m_NetworkManager.GetComponent<UnityTransport>();
         m_MainMenuUI.OnDisconnect += Disconnect;
+        m_MainMenuUI.OnHostStart += StartHost;
+        m_MainMenuUI.OnConnectionStart += StartClient;
+        m_MainMenuUI.OnPortChange += ChangePort;
+        m_MainMenuUI.OnAdressChange += ChangeAdress;
+    }
 
-        m_StartHostButton.onClick.AddListener(() =>
-        {
+    private void StartHost()
+    {
 #if UNITY_EDITOR
-            ChangeServerAdress(DEFAULT_ADDRESS);
+        ChangeAdress(DEFAULT_ADDRESS);
 #else
             string localIP;
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0))
@@ -44,77 +48,50 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
             }
             ChangeServerAdress(localIP);
 #endif
-            NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ServerListenAddress = "0.0.0.0";
-            if (NetworkManager.Singleton.StartHost())
-            {
-                ChangeUIPortIP();
-                m_MainMenuUI.OpenLobby();
-            }
-            else
-            {
-                m_IPAdress.text = "IP: Error";
-                m_PortAdress.text = "Port: Error";
-            }
+        NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ServerListenAddress = "0.0.0.0";
 
-        });
-        m_StartClientButton.onClick.AddListener(() =>
+        if (NetworkManager.Singleton.StartHost())
         {
-            if (NetworkManager.Singleton.StartClient())
-            {
-                NetworkManager.Singleton.OnClientConnectedCallback += Connected;
-                StartCoroutine(TryToConnect());
-            }
-            else
-            {
-                EditorLogger.Log("Failed to start Client");
-            }
-
-        });
-
-        m_HostPortInputField.onSubmit.AddListener((string adress) =>
+            ChangeUIPortIP();
+            m_MainMenuUI.OpenLobby();
+        }
+        else
         {
-            if (ushort.TryParse(adress, out ushort portUshort))
-            {
-                if (portUshort > 0 && portUshort <= 65535)
-                {
-                    m_HostPortInputField.text = portUshort.ToString();
-                }
-                else
-                {
-                    m_HostPortInputField.text = DEFAULT_PORT;
-                }
-            }
-            ChangeServerPort(m_HostPortInputField.text);
-        });
+            m_IPAdress.text = "IP: Error";
+            m_PortAdress.text = "Port: Error";
+        }
 
-        m_ClientIPAdressInputField.onSubmit.AddListener((string adress) =>
-        {
-            if (IPAddress.TryParse(adress, out IPAddress iPAdress))
-            {
+    }
 
-                m_ClientIPAdressInputField.text = iPAdress.ToString();
-            }
-            else
-            {
-                m_ClientIPAdressInputField.text = DEFAULT_ADDRESS;
-            }
-            ChangeServerAdress(m_ClientIPAdressInputField.text);
-        });
-        m_ClientPortInputField.onSubmit.AddListener((string port) =>
+    private void StartClient()
+    {
+        if (NetworkManager.Singleton.StartClient())
         {
-            if (ushort.TryParse(port, out ushort portUshort))
-            {
-                if (portUshort > 0 && portUshort <= 65535)
-                {
-                    m_ClientPortInputField.text = portUshort.ToString();
-                }
-                else
-                {
-                    m_ClientPortInputField.text = DEFAULT_PORT;
-                }
-            }
-            ChangeServerPort(m_ClientPortInputField.text);
-        });
+            NetworkManager.Singleton.OnClientConnectedCallback += Connected;
+            StartCoroutine(TryToConnect());
+        }
+        else
+        {
+            EditorLogger.Log("Failed to start Client");
+        }
+    }
+
+    private void ChangeAdress(string adress)
+    {
+        if (IPAddress.TryParse(adress, out IPAddress iPAdress))
+        {
+            m_UTransport.SetConnectionData(iPAdress.ToString(), m_UTransport.ConnectionData.Port);
+        }
+        else
+        {
+            m_UTransport.SetConnectionData(DEFAULT_ADDRESS, m_UTransport.ConnectionData.Port);
+
+        }
+    }
+
+    private void ChangePort(string port)
+    {
+        m_UTransport.SetConnectionData(m_UTransport.ConnectionData.Address, ushort.Parse(port));
     }
 
     private void Connected(ulong obj)
@@ -151,19 +128,7 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
         NetworkManager.Singleton.Shutdown();
     }
 
-    private void ChangeServerAdress(string adress)
-    {
-        NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(adress, ushort.Parse(m_ClientPortInputField.text));
-    }
-
-    private void ChangeServerPort(string port)
-    {
-        NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(m_ClientIPAdressInputField.text, ushort.Parse(port));
-        m_ClientPortInputField.text = port;
-        m_HostPortInputField.text = port;
-    }
-
-    private void Disconnect()
+    public void Disconnect()
     {
         NetworkManager.Singleton.Shutdown();
         m_IPAdress.text = "IP: Disconnected";

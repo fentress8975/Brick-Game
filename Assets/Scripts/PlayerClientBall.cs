@@ -60,12 +60,6 @@ public class PlayerClientBall : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         EditorLogger.LogWarning(collision.gameObject.name.ToString());
-        //do not collide with serverbar
-        //if (collision.gameObject.TryGetComponent<PlayerServerBar>(out _))
-        //{
-        //    return;
-        //}
-
         Collider _collider = collision.collider;
         Vector3 _collisionPoint = _collider.ClosestPointOnBounds(transform.position) + transform.TransformDirection(Vector3.back * 5);
         Ray _directionRay = new(_collisionPoint, transform.TransformDirection(Vector3.forward));
@@ -85,7 +79,6 @@ public class PlayerClientBall : MonoBehaviour
 
     public void ResetBall()
     {
-        onCollision?.Invoke(gameObject.transform.position, gameObject.transform.rotation);
         StartCoroutine(HoldBall());
     }
     private IEnumerator HoldBall()
@@ -99,7 +92,7 @@ public class PlayerClientBall : MonoBehaviour
             yield return null;
         }
         ReleaseBall();
-        onCollision?.Invoke(gameObject.transform.position, gameObject.transform.rotation);
+        //onCollision?.Invoke(gameObject.transform.position, gameObject.transform.rotation);
     }
     private void ReleaseBall()
     {

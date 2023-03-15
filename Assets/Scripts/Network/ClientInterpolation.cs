@@ -12,13 +12,17 @@ public class ClientInterpolation : NetworkBehaviour
     [ClientRpc]
     public void SetPlayer1InterpolationClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        m_P2Ball.Interpolate = false;
-        m_P2Bar.Interpolate = false;
+        m_P2Ball.Interpolate = true;
+        m_P2Bar.Interpolate = true;
+        m_P1Ball.Interpolate = false;
+        m_P1Bar.Interpolate = false;
     }
     [ClientRpc]
     public void SetPlayer2InterpolationClientRpc(ClientRpcParams clientRpcParams = default)
     {
-        m_P1Ball.Interpolate = false;
-        m_P1Bar.Interpolate = false;
+        m_P1Ball.Interpolate = true;
+        m_P1Bar.Interpolate = true;
+        m_P2Ball.Interpolate = false;
+        m_P2Bar.Interpolate = false;
     }
 }

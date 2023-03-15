@@ -28,6 +28,7 @@ public class ServerReconciliation : SingletonNetWork<ServerReconciliation>
         //{
         //    item.gameObject.GetComponentInChildren<MeshRenderer>().material = m_NoRenderMaterial;
         //}
+        //ClientBallReconciliation.Singletone.PlayerLocalBar.ResetBall();
         m_Player1Bar.gameObject.GetComponentInChildren<MeshRenderer>().material = m_NoRenderMaterial;
         m_Player1Ball.gameObject.GetComponentInChildren<MeshRenderer>().material = m_NoRenderMaterial;
 
@@ -39,6 +40,7 @@ public class ServerReconciliation : SingletonNetWork<ServerReconciliation>
         //{
         //    item.gameObject.GetComponentInChildren<MeshRenderer>().material = m_NoRenderMaterial;
         //}
+        //ClientBallReconciliation.Singletone.PlayerLocalBar.ResetBall();
         m_Player2Bar.gameObject.GetComponentInChildren<MeshRenderer>().material = m_NoRenderMaterial;
         m_Player2Ball.gameObject.GetComponentInChildren<MeshRenderer>().material = m_NoRenderMaterial;
     }

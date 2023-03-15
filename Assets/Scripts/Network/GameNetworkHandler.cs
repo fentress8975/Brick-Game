@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -41,14 +42,14 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
 
     private ClientRpcParams m_ClientP1RpcParams;
     private ClientRpcParams m_ClientP2RpcParams;
-    private bool m_isP1Ready;
-    private bool m_isP2Ready;
+    private bool m_isP1ReadyToRematch = false;
+    private bool m_isP2ReadyToRematch = false;
+    private bool m_P2isReadyStartGame = false;
+    private bool m_P1isReadyStartGame = false;
 
 
 #if UNITY_EDITOR
     public UnityEditor.SceneAsset SceneAsset;
-    private bool m_P2isReady = false;
-    private bool m_P1isReady = false;
 
     private void OnValidate()
     {
@@ -67,23 +68,24 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
         if (IsHost)
         {
             SetupPlayersID();
-            ServerReconciliation.Singletone.SetServerReconciliation();
+            SetPlayersNames();
             ClientBarReconciliation.Singletone.InitClientRpc(PLAYER1, Player1RpcParams);
             ClientBarReconciliation.Singletone.InitClientRpc(PLAYER2, Player2RpcParams);
-            ClientBallReconciliation.Singletone.InitClientRpc(PLAYER1, Player1RpcParams);
-            ClientBallReconciliation.Singletone.InitClientRpc(PLAYER2, Player2RpcParams);
+            //ClientBallReconciliation.Singletone.InitClientRpc(PLAYER1, Player1RpcParams);
+            //ClientBallReconciliation.Singletone.InitClientRpc(PLAYER2, Player2RpcParams);
             m_P1Ball.Setup(m_P1Bar, m_P1ID);
             m_P2Ball.Setup(m_P2Bar, m_P2ID);
+            ServerReconciliation.Singletone.SetServerReconciliation();
         }
     }
 
     private void Update()
     {
-        if (m_P1isReady && m_P2isReady)
+        if (m_P1isReadyStartGame && m_P2isReadyStartGame)
         {
             EditorLogger.Log("start igry");
-            m_P1isReady = false;
-            m_P2isReady = false;
+            m_P1isReadyStartGame = false;
+            m_P2isReadyStartGame = false;
             m_GameManager.RestartGame();
         }
     }
@@ -110,19 +112,19 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
     {
         if (playerID == m_P1ID)
         {
-            m_isP1Ready = true;
+            m_isP1ReadyToRematch = true;
         }
         if (playerID == m_P2ID)
         {
-            m_isP2Ready = true;
+            m_isP2ReadyToRematch = true;
         }
 
-        if (m_isP1Ready && m_isP2Ready)
+        if (m_isP1ReadyToRematch && m_isP2ReadyToRematch)
         {
             m_GameManager.RestartGame();
             m_GameUI.RestartGame();
-            m_isP1Ready = false;
-            m_isP2Ready = false;
+            m_isP1ReadyToRematch = false;
+            m_isP2ReadyToRematch = false;
         }
     }
 
@@ -150,6 +152,15 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
         };
     }
 
+    private void SetPlayersNames()
+    {
+        m_P1Name = PlayerPrefs.GetString("Player1Nickname");
+        m_P2Name = PlayerPrefs.GetString("Player2Nickname");
+        FixedString32Bytes p1 = m_P1Name.ToString();
+        FixedString32Bytes p2 = m_P2Name.ToString();
+        SendPlayersNamesClientRpc(p1, p2, Player2RpcParams);
+    }
+
     private void SetupPlayersInterpolation()
     {
         if (IsHost)
@@ -164,16 +175,23 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
         if (id == m_P1ID)
         {
             EditorLogger.LogError("P1 ready");
-            m_P1isReady = true;
+            m_P1isReadyStartGame = true;
         }
         else if (id == m_P2ID)
         {
             EditorLogger.LogError("P2 ready");
-            m_P2isReady = true;
+            m_P2isReadyStartGame = true;
         }
         else
         {
             EditorLogger.LogError("Ploxo");
         }
+    }
+
+    [ClientRpc]
+    private void SendPlayersNamesClientRpc(FixedString32Bytes p1Name, FixedString32Bytes p2Name, ClientRpcParams player2RpcParams)
+    {
+        m_P1Name = p1Name.ToString();
+        m_P2Name = p2Name.ToString();
     }
 }

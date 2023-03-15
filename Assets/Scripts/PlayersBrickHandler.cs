@@ -31,10 +31,10 @@ public class PlayersBrickHandler : NetworkBehaviour
                 item.OnDestruction += CheckVictoryConditionP2;
             }
 
-            ulong p1 = 1;
-            ulong p2 = 2;
-            SendPatternClientRpc(pattern, p1, GameNetworkHandler.Singletone.Player1RpcParams);
-            SendPatternClientRpc(pattern, p2, GameNetworkHandler.Singletone.Player2RpcParams);
+            //ulong p1 = 1;
+            //ulong p2 = 2;
+            //SendPatternClientRpc(pattern, p1, GameNetworkHandler.Singletone.Player1RpcParams);
+            //SendPatternClientRpc(pattern, p2, GameNetworkHandler.Singletone.Player2RpcParams);
 
         }
     }

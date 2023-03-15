@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,7 +7,7 @@ using UnityEngine;
 public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliation>
 {
     public PlayerClientBall PlayerLocalBar { get => m_PlayerLocalBall; }
-    public PlayerServerBall PlayerServerBall { get => m_PlayerServerBall;}
+    public PlayerServerBall PlayerServerBall { get => m_PlayerServerBall; }
 
     [SerializeField] private PlayerServerBall m_PlayerServerBall;
     [SerializeField] private PlayerClientBall m_PlayerLocalBall;
@@ -37,7 +36,6 @@ public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliatio
         m_PlayerLocalBall.transform.rotation = m_PlayerServerBall.transform.rotation;
         m_PlayerLocalBall.Setup(m_PlayerServerBall.BallSpeed, m_PlayerServerBall.MaxSpeed, m_PlayerServerBall.Penalty, ClientBarReconciliation.Singletone.PlayerLocalBar);
         m_PlayerLocalBall.onCollision += AddAngleToQueue;
-        m_PlayerLocalBall.ResetBall();
     }
 
     private void Update()
@@ -48,10 +46,10 @@ public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliatio
     public void AddAngleToQueue(Vector3 posLocal, Quaternion angleLocal)
     {
         ulong commandNumberLocal = m_NumberLocal;
-        EditorLogger.Log($"Добавление команды {commandNumberLocal}, позиция {posLocal}, angle {angleLocal}");
-        m_BallPositionsAnglesLocalDictionary.Add(commandNumberLocal, new BallPositionAngle(posLocal, angleLocal));
         m_NumberLocal++;
         m_UnprocessedCommandsCountLocal++;
+        EditorLogger.Log($"Добавление команды {commandNumberLocal}, позиция {posLocal}, angle {angleLocal.eulerAngles}");
+        m_BallPositionsAnglesLocalDictionary.Add(commandNumberLocal, new BallPositionAngle(posLocal, angleLocal));
     }
 
     private void CheckWaitList()
@@ -78,7 +76,7 @@ public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliatio
         }
         else
         {
-            Resync(numberServer,ballServerData);
+            Resync(numberServer, ballServerData);
             return;
         }
     }
@@ -91,7 +89,10 @@ public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliatio
         }
         else
         {
-            EditorLogger.Log($" Command {numberServer} {m_BallPositionsAnglesLocalDictionary[numberServer].Angle} не совпадает с {m_BallPositionsAnglesServerDictionary[numberServer].Angle}");
+            EditorLogger.Log($" Command {numberServer} {m_BallPositionsAnglesLocalDictionary[numberServer].Position} " +
+                             $"не совпадает с {m_BallPositionsAnglesServerDictionary[numberServer].Position}");
+            EditorLogger.Log($" Command {numberServer} {m_BallPositionsAnglesLocalDictionary[numberServer].Angle.eulerAngles} " +
+                             $"не совпадает с {m_BallPositionsAnglesServerDictionary[numberServer].Angle.eulerAngles}");
             return false;
         }
     }
@@ -108,21 +109,34 @@ public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliatio
 
     private void Resync(ulong numberServer, BallPositionAngle ballServerData)
     {
-        m_PlayerLocalBall.gameObject.transform.position = ballServerData.Position;
-        m_PlayerLocalBall.gameObject.transform.rotation = ballServerData.Angle;
-        m_NumberLocal = numberServer;
+        EditorLogger.Log($"скопированный поворот quaterion {ballServerData.Angle}, euler {ballServerData.Angle.eulerAngles}");
+        EditorLogger.Log($"текущий поворот {m_PlayerLocalBall.transform.rotation}, euler {m_PlayerLocalBall.transform.eulerAngles}");
+        if (m_PlayerLocalBall.transform.position != ballServerData.Position && m_PlayerLocalBall.transform.rotation != ballServerData.Angle)
+        {
+            m_PlayerLocalBall.transform.SetPositionAndRotation(ballServerData.Position, ballServerData.Angle);
+
+        }
+        else if (m_PlayerLocalBall.transform.position != ballServerData.Position)
+        {
+            m_PlayerLocalBall.transform.position = ballServerData.Position;
+        }
+        else if (m_PlayerLocalBall.transform.rotation != ballServerData.Angle)
+        {
+            m_PlayerLocalBall.transform.rotation = ballServerData.Angle;
+        }
+        EditorLogger.Log($"итоговый поворот quaterion {m_PlayerLocalBall.transform.rotation}, euler {m_PlayerLocalBall.transform.eulerAngles}");
+
+        m_NumberLocal = numberServer + 1;
         m_BallPositionsAnglesLocalDictionary.Clear();
-        //m_PlayerLocalBall.UpdateSpeed(m_PlayerServerBall.BallSpeed, m_PlayerServerBall.MaxSpeed, m_PlayerServerBall.Penalty);
         RemoveCompletedCommand(numberServer);
     }
 
     private void AddCommandToWaitList(BallPositionAngle ballDataServer)
     {
         ulong _number = m_NumberServer;
-        EditorLogger.Log($"Получение команды {_number}, позиция {ballDataServer.Position}, angle {ballDataServer.Angle}");
-        m_BallPositionsAnglesServerDictionary.Add(_number, ballDataServer);
-        EditorLogger.Log($"Ожидают {m_BallPositionsAnglesServerDictionary.Count} команд мяча.");
         m_NumberServer++;
+        EditorLogger.Log($"Получение команды {_number}, позиция {ballDataServer.Position}, angle {ballDataServer.Angle.eulerAngles}");
+        m_BallPositionsAnglesServerDictionary.Add(_number, ballDataServer);
     }
 
     [ClientRpc]

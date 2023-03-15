@@ -58,19 +58,14 @@ public class PlayerServerBall : NetworkBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         if (!IsHost) { return; }
-        //do not collide with local
-        if (collision.gameObject.TryGetComponent<PlayerClientBar>(out _))
-        {
-            return;
-        }
         Collider _collider = collision.collider;
         Vector3 _collisionPoint = _collider.ClosestPointOnBounds(transform.position) + transform.TransformDirection(Vector3.back * 5);
         Ray _directionRay = new(_collisionPoint, transform.TransformDirection(Vector3.forward));
         if (_collider.Raycast(_directionRay, out RaycastHit hitInfo, Mathf.Infinity))
         {
             m_Rigidbody.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal), Vector3.back);
-            SyncPlayerBallData();
         }
+        SyncPlayerBallData(gameObject.transform.position, gameObject.transform.rotation);
     }
 
 
@@ -79,7 +74,6 @@ public class PlayerServerBall : NetworkBehaviour
     {
         if (IsHost)
         {
-            SyncPlayerBallData();
             StartCoroutine(HoldBall());
         }
     }
@@ -94,7 +88,7 @@ public class PlayerServerBall : NetworkBehaviour
             yield return null;
         }
         ReleaseBall();
-        SyncPlayerBallData();
+        //SyncPlayerBallData(gameObject.transform.position, gameObject.transform.rotation);
     }
 
 
@@ -113,17 +107,17 @@ public class PlayerServerBall : NetworkBehaviour
         }
     }
 
-    private void SyncPlayerBallData()
+    private void SyncPlayerBallData(Vector3 pos, Quaternion angle)
     {
         if (m_PlayerId.Value == GameNetworkHandler.Singletone.Player1ID)
         {
             ClientBallReconciliation.Singletone.ReturnCompletedCommandClientRpc(
-                gameObject.transform.position, gameObject.transform.rotation, GameNetworkHandler.Singletone.Player1RpcParams);
+                pos, angle, GameNetworkHandler.Singletone.Player1RpcParams);
         }
         else if (m_PlayerId.Value == GameNetworkHandler.Singletone.Player2ID)
         {
             ClientBallReconciliation.Singletone.ReturnCompletedCommandClientRpc(
-                gameObject.transform.position, gameObject.transform.rotation, GameNetworkHandler.Singletone.Player2RpcParams);
+               pos, angle, GameNetworkHandler.Singletone.Player2RpcParams);
         }
         else
         {

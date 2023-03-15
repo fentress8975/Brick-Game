@@ -440,7 +440,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrickPrefab: {fileID: 5960751618187032123, guid: 10e3615ef6e065b48960ee1c1042d2a7, type: 3}
-  m_BrickParent: {fileID: 977120496}
+  m_BrickClientPrefab: {fileID: 0}
+  m_BrickServerParent: {fileID: 977120496}
+  m_BrickParentClient: {fileID: 0}
 --- !u!114 &369141920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,6 +476,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrickGenerator: {fileID: 369141919}
+  m_PlayersBrickClientHandler: {fileID: 0}
   m_GameManager: {fileID: 369141920}
 --- !u!4 &385368841 stripped
 Transform:
@@ -802,7 +805,7 @@ GameObject:
   - component: {fileID: 977120496}
   - component: {fileID: 977120497}
   m_Layer: 0
-  m_Name: Bricks
+  m_Name: BricksServers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1319,6 +1322,7 @@ MonoBehaviour:
   m_Player2Bar: {fileID: 3946420954138876900}
   m_Player1Ball: {fileID: 1680592300}
   m_Player2Ball: {fileID: 722615474}
+  m_BricksClient: {fileID: 0}
   m_NoRenderMaterial: {fileID: 2100000, guid: f3b1470bdc8d4144b87cdbdee38e3b10, type: 2}
 --- !u!114 &1493856211
 MonoBehaviour:
@@ -1343,7 +1347,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1493856203}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f699f562bac0304d839e79919e1e1d9, type: 3}
   m_Name: 
@@ -2544,31 +2548,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801045, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.6962183
+      value: 0.6408564
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801045, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.6962183
+      value: -0.6408564
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801045, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.12361259
+      value: 0.29883626
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801045, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.12361262
+      value: -0.29883626
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801045, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -69.864
+      value: -40
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801045, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801045, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 90
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801046, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: m_Name

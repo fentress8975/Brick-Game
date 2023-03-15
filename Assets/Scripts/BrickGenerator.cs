@@ -7,7 +7,7 @@ public class BrickGenerator : NetworkBehaviour
 {
     [SerializeField] private Brick m_BrickPrefab;
     [SerializeField] private BrickClient m_BrickClientPrefab;
-    [SerializeField] private Transform m_BrickClientParent;
+    [SerializeField] private Transform m_BrickServerParent;
     [SerializeField] private Transform m_BrickParentClient;
 
     public PlayersBricks GenerateSymmetrically(bool[,] pattern)
@@ -60,7 +60,7 @@ public class BrickGenerator : NetworkBehaviour
                     Vector3 _position = new(_x, _y, 0);
                     BrickClient brick = Instantiate(m_BrickClientPrefab, _position, m_BrickClientPrefab.transform.rotation);
                     brick.gameObject.name = $"P1 {i}{j}";
-                    brick.transform.SetParent(m_BrickClientParent);
+                    brick.transform.SetParent(m_BrickParentClient);
                     bricks.Add(brick);
                 }
                 _x++;
@@ -86,7 +86,7 @@ public class BrickGenerator : NetworkBehaviour
                     Vector3 _position = new(_x, _y, 0);
                     BrickClient brick = Instantiate(m_BrickClientPrefab, _position, m_BrickClientPrefab.transform.rotation);
                     brick.gameObject.name = $"P2 {i}{j}";
-                    brick.transform.SetParent(m_BrickClientParent);
+                    brick.transform.SetParent(m_BrickParentClient);
                     bricks.Add(brick);
                 }
                 _x--;
@@ -113,7 +113,7 @@ public class BrickGenerator : NetworkBehaviour
                     Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
                     brick.gameObject.name = $"P1 {i}{j}";
                     brick.GetComponent<NetworkObject>().Spawn();
-                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickClientParent);
+                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickServerParent);
                     bricks.Add(brick);
                 }
                 _x++;
@@ -140,7 +140,7 @@ public class BrickGenerator : NetworkBehaviour
                     Brick brick = Instantiate(m_BrickPrefab, _position, m_BrickPrefab.transform.rotation);
                     brick.gameObject.name = $"P2 {i}{j}";
                     brick.GetComponent<NetworkObject>().Spawn();
-                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickClientParent);
+                    brick.GetComponent<NetworkObject>().TrySetParent(m_BrickServerParent);
                     bricks.Add(brick);
                 }
                 _x--;

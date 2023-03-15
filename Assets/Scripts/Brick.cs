@@ -5,6 +5,7 @@ using UnityEngine;
 public class Brick : NetworkBehaviour
 {
     public Action<Brick> OnDestruction;
+    [SerializeField] private BrickFX m_BrickFX;
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -22,6 +23,12 @@ public class Brick : NetworkBehaviour
         OnDestruction?.Invoke(this);
         OnNetworkDespawn();
         Destroy(gameObject);
+    }
+
+    [ContextMenu("Destroy")]
+    public void Destruction()
+    {
+        m_BrickFX.Play();
     }
 #endif
 }
