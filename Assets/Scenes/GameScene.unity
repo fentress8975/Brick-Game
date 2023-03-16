@@ -443,6 +443,8 @@ MonoBehaviour:
   m_BrickClientPrefab: {fileID: 0}
   m_BrickServerParent: {fileID: 977120496}
   m_BrickParentClient: {fileID: 0}
+  m_Player1Color: {fileID: 2100000, guid: 9eb94a1e278407d4997b9b3ecaf26e7d, type: 2}
+  m_Player2Color: {fileID: 2100000, guid: d9ca8ea3e996cba4dae1ee7f0b03f492, type: 2}
 --- !u!114 &369141920
 MonoBehaviour:
   m_ObjectHideFlags: 0

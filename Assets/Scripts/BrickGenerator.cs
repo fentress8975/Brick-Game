@@ -9,6 +9,7 @@ public class BrickGenerator : NetworkBehaviour
     [SerializeField] private BrickClient m_BrickClientPrefab;
     [SerializeField] private Transform m_BrickServerParent;
     [SerializeField] private Transform m_BrickParentClient;
+    
 
     public PlayersBricks GenerateSymmetrically(bool[,] pattern)
     {
@@ -114,6 +115,7 @@ public class BrickGenerator : NetworkBehaviour
                     brick.gameObject.name = $"P1 {i}{j}";
                     brick.GetComponent<NetworkObject>().Spawn();
                     brick.GetComponent<NetworkObject>().TrySetParent(m_BrickServerParent);
+                    brick.ChangeColorClientRpc(Brick.PLAYER1);
                     bricks.Add(brick);
                 }
                 _x++;
@@ -141,6 +143,7 @@ public class BrickGenerator : NetworkBehaviour
                     brick.gameObject.name = $"P2 {i}{j}";
                     brick.GetComponent<NetworkObject>().Spawn();
                     brick.GetComponent<NetworkObject>().TrySetParent(m_BrickServerParent);
+                    brick.ChangeColorClientRpc(Brick.PLAYER2);
                     bricks.Add(brick);
                 }
                 _x--;

@@ -35,7 +35,6 @@ public class PlayersBrickHandler : NetworkBehaviour
             //ulong p2 = 2;
             //SendPatternClientRpc(pattern, p1, GameNetworkHandler.Singletone.Player1RpcParams);
             //SendPatternClientRpc(pattern, p2, GameNetworkHandler.Singletone.Player2RpcParams);
-
         }
     }
 
