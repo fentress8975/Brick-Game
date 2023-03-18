@@ -7,23 +7,24 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
 {
     private const int PLAYER1 = 1;
     private const int PLAYER2 = 2;
-    public string P1Name { get => m_P1Name; }
-    public string P2Name { get => m_P2Name; }
+    public string P1Name { get { return m_P1Name; } }
+    public string P2Name { get { return m_P2Name; } }
+    public Color P1Color { get { return m_P1Color; } }
+    public Color P2Color { get { return m_P2Color; } }
 
-    public ulong Player1ID { get => m_P1ID; }
-    public ulong Player2ID { get => m_P2ID; }
+    public ulong Player1ID { get { return m_Player1Id; } }
+    public ulong Player2ID { get { return m_Player2Id; } }
 
-    public PlayerServerBar Player1Bar { get => m_P1Bar; }
-    public PlayerServerBar Player2Bar { get => m_P2Bar; }
-    public PlayerServerBall Player1Ball { get => m_P1Ball; }
-    public PlayerServerBall Player2Ball { get => m_P2Ball; }
+    public PlayerServerBar Player1Bar { get { return m_P1Bar; } }
+    public PlayerServerBar Player2Bar { get { return m_P2Bar; } }
+    public PlayerServerBall Player1Ball { get { return m_P1Ball; } }
+    public PlayerServerBall Player2Ball { get { return m_P2Ball; } }
 
-    public ClientRpcParams Player1RpcParams { get => m_ClientP1RpcParams; }
-    public ClientRpcParams Player2RpcParams { get => m_ClientP2RpcParams; }
+    public ClientRpcParams Player1RpcParams { get { return m_ClientP1RpcParams; } }
+    public ClientRpcParams Player2RpcParams { get { return m_ClientP2RpcParams; } }
 
     private NetworkManager m_NetworkManager;
     [Header("GameComponents")]
-    [SerializeField] private SetupNetworkPlayers m_SetupNetworkPlayers;
     [SerializeField] private GameManager m_GameManager;
     [SerializeField] private GameUI m_GameUI;
     [SerializeField] private ClientInterpolation m_ClientInterpolation;
@@ -31,8 +32,10 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
     [SerializeField] private string m_SceneName;
     [SerializeField] private string m_P1Name = "Player1";
     [SerializeField] private string m_P2Name = "Player2";
-    [SerializeField] private ulong m_P1ID;
-    [SerializeField] private ulong m_P2ID;
+    private Color m_P1Color;
+    private Color m_P2Color;
+    [SerializeField] private ulong m_Player1Id;
+    [SerializeField] private ulong m_Player2Id;
     [SerializeField] private PlayerServerBar m_P1Bar;
     [SerializeField] private PlayerServerBar m_P2Bar;
     [SerializeField] private PlayerServerBall m_P1Ball;
@@ -63,18 +66,18 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
     private void Start()
     {
         m_NetworkManager = NetworkManager.Singleton;
-        NetworkManager.OnClientDisconnectCallback += CloseGameConnection;
+
         SetupPlayers();
         if (IsHost)
         {
             SetupPlayersID();
-            SetPlayersNames();
+            LoadPlayersData();
             ClientBarReconciliation.Singletone.InitClientRpc(PLAYER1, Player1RpcParams);
             ClientBarReconciliation.Singletone.InitClientRpc(PLAYER2, Player2RpcParams);
             //ClientBallReconciliation.Singletone.InitClientRpc(PLAYER1, Player1RpcParams);
             //ClientBallReconciliation.Singletone.InitClientRpc(PLAYER2, Player2RpcParams);
-            m_P1Ball.Setup(m_P1Bar, m_P1ID);
-            m_P2Ball.Setup(m_P2Bar, m_P2ID);
+            m_P1Ball.Setup(m_P1Bar, m_Player1Id);
+            m_P2Ball.Setup(m_P2Bar, m_Player2Id);
             ServerReconciliation.Singletone.SetServerReconciliation();
         }
     }
@@ -90,6 +93,11 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
         }
     }
 
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+    }
+
     private void SetupPlayers()
     {
         m_GameManager.SetupPlayers(m_P1Bar, m_P2Bar, m_P1Ball, m_P2Ball);
@@ -102,19 +110,13 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
         ReturnToMainMenu();
     }
 
-    private void CloseGameConnection(ulong id)
-    {
-        m_NetworkManager.Shutdown();
-        ReturnToMainMenu();
-    }
-
     public void TryRematchGame(ulong playerID)
     {
-        if (playerID == m_P1ID)
+        if (playerID == m_Player1Id)
         {
             m_isP1ReadyToRematch = true;
         }
-        if (playerID == m_P2ID)
+        if (playerID == m_Player2Id)
         {
             m_isP2ReadyToRematch = true;
         }
@@ -130,32 +132,37 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
 
     private void ReturnToMainMenu()
     {
+        m_NetworkManager.Shutdown();
         SceneManager.LoadScene(m_SceneName, LoadSceneMode.Single);
     }
 
     private void SetupPlayersID()
     {
-        m_SetupNetworkPlayers.SetupPlayers(out m_P1ID, out m_P2ID);
+        m_Player1Id = NetworkManager.Singleton.ConnectedClientsIds[0];
+        m_Player2Id = NetworkManager.Singleton.ConnectedClientsIds[^1];
+        EditorLogger.Log($"Player1 id {m_Player1Id} Player2 id {m_Player2Id}");
         m_ClientP1RpcParams = new ClientRpcParams
         {
             Send = new ClientRpcSendParams
             {
-                TargetClientIds = new ulong[] { m_P1ID }
+                TargetClientIds = new ulong[] { m_Player1Id }
             }
         };
         m_ClientP2RpcParams = new ClientRpcParams
         {
             Send = new ClientRpcSendParams
             {
-                TargetClientIds = new ulong[] { m_P2ID }
+                TargetClientIds = new ulong[] { m_Player2Id }
             }
         };
     }
 
-    private void SetPlayersNames()
+    private void LoadPlayersData()
     {
-        m_P1Name = PlayerPrefs.GetString("Player1Nickname");
-        m_P2Name = PlayerPrefs.GetString("Player2Nickname");
+        m_P1Name = PlayersData.Singletone.Player1Name;
+        m_P2Name = PlayersData.Singletone.Player2Name;
+        m_P1Color = PlayersData.Singletone.Player1Color;
+        m_P2Color = PlayersData.Singletone.Player2Color;
         FixedString32Bytes p1 = m_P1Name.ToString();
         FixedString32Bytes p2 = m_P2Name.ToString();
         SendPlayersNamesClientRpc(p1, p2, Player2RpcParams);
@@ -172,12 +179,12 @@ public class GameNetworkHandler : SingletonNetWork<GameNetworkHandler>
 
     internal void PlayerReadyToStartGame(ulong id)
     {
-        if (id == m_P1ID)
+        if (id == m_Player1Id)
         {
             EditorLogger.LogError("P1 ready");
             m_P1isReadyStartGame = true;
         }
-        else if (id == m_P2ID)
+        else if (id == m_Player2Id)
         {
             EditorLogger.LogError("P2 ready");
             m_P2isReadyStartGame = true;

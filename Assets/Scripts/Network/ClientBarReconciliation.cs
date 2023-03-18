@@ -123,7 +123,7 @@ public class ClientBarReconciliation : SingletonNetWork<ClientBarReconciliation>
         foreach (var key in m_CopyListKeys)
         {
             m_PositionListLocal[key] = m_PositionListLocal[key] + posDiff;
-           // EditorLogger.Log($"Команда {key} имеет новую позицию {m_PositionListLocal[key]}");
+            // EditorLogger.Log($"Команда {key} имеет новую позицию {m_PositionListLocal[key]}");
         }
 
         Vector3 _newLocalPos = m_PlayerLocalBar.transform.position + posDiff;

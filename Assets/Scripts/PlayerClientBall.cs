@@ -69,7 +69,7 @@ public class PlayerClientBall : MonoBehaviour
         }
         onCollision?.Invoke(gameObject.transform.position, gameObject.transform.rotation);
     }
-  
+
     public void UpdateSpeed(float ballSpeed, float maxSpeed, float penalty)
     {
         m_BallSpeed = ballSpeed;

@@ -459,8 +459,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PlayersBrickHandler: {fileID: 369141921}
   m_GameUI: {fileID: 2077332880}
-  m_Player1ID: 0
-  m_Player2ID: 0
   m_P1Ball: {fileID: 1680592300}
   m_P2Ball: {fileID: 722615474}
   m_P1Bar: {fileID: 1224866104159100460}
@@ -2346,6 +2344,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 3655476811
       objectReference: {fileID: 0}
+    - target: {fileID: 1224866103573392781, guid: a23b26dd04bc0ae418a2cf124c009766, type: 3}
+      propertyPath: DontDestroyWithOwner
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1224866103573392782, guid: a23b26dd04bc0ae418a2cf124c009766, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -2437,6 +2439,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 323754770
       objectReference: {fileID: 0}
+    - target: {fileID: 3946420954504321257, guid: 1384ecf748804734b8e981e0612e4dd7, type: 3}
+      propertyPath: DontDestroyWithOwner
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3946420954504321258, guid: 1384ecf748804734b8e981e0612e4dd7, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -2524,6 +2530,10 @@ PrefabInstance:
       propertyPath: GlobalObjectIdHash
       value: 3176295055
       objectReference: {fileID: 0}
+    - target: {fileID: 5544423368751801035, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
+      propertyPath: DontDestroyWithOwner
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5544423368751801044, guid: dad4a5242204ee640ad6d53903f8cf9a, type: 3}
       propertyPath: Interpolate
       value: 0
@@ -2603,6 +2613,10 @@ PrefabInstance:
     - target: {fileID: 6416885340352235424, guid: 2ef992b15ca5c994586592d008c1fe62, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 3729903867
+      objectReference: {fileID: 0}
+    - target: {fileID: 6416885340352235424, guid: 2ef992b15ca5c994586592d008c1fe62, type: 3}
+      propertyPath: DontDestroyWithOwner
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6416885340352235425, guid: 2ef992b15ca5c994586592d008c1fe62, type: 3}
       propertyPath: Interpolate

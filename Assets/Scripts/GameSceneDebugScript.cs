@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -17,14 +16,14 @@ public class GameSceneDebugScript : NetworkBehaviour
 
     private void Update()
     {
-        if(Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             m_ReadyText.gameObject.SetActive(false);
             PlayerReadyServerRpc();
         }
     }
 
-    [ServerRpc(RequireOwnership =false)]
+    [ServerRpc(RequireOwnership = false)]
     private void PlayerReadyServerRpc(ServerRpcParams serverRpcParams = default)
     {
         GameNetworkHandler.Singletone.PlayerReadyToStartGame(serverRpcParams.Receive.SenderClientId);

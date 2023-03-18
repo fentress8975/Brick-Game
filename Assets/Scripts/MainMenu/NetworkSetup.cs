@@ -5,9 +5,7 @@ using System.Net;
 using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class NetworkSetup : SingletonMono<NetworkSetup>
 {
@@ -34,6 +32,11 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
         m_MainMenuUI.OnAdressChange += ChangeAdress;
     }
 
+    private void OnDestroy()
+    {
+            m_NetworkManager.OnClientConnectedCallback -= Connected;
+    }
+
     private void StartHost()
     {
 #if UNITY_EDITOR
@@ -48,9 +51,9 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
             }
             ChangeServerAdress(localIP);
 #endif
-        NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.ServerListenAddress = "0.0.0.0";
+        m_NetworkManager.GetComponent<UnityTransport>().ConnectionData.ServerListenAddress = "0.0.0.0";
 
-        if (NetworkManager.Singleton.StartHost())
+        if (m_NetworkManager.StartHost())
         {
             ChangeUIPortIP();
             m_MainMenuUI.OpenLobby();
@@ -65,9 +68,9 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
 
     private void StartClient()
     {
-        if (NetworkManager.Singleton.StartClient())
+        if (m_NetworkManager.StartClient())
         {
-            NetworkManager.Singleton.OnClientConnectedCallback += Connected;
+            m_NetworkManager.OnClientConnectedCallback += Connected;
             StartCoroutine(TryToConnect());
         }
         else
@@ -116,8 +119,8 @@ public class NetworkSetup : SingletonMono<NetworkSetup>
     private void ChangeUIPortIP()
     {
         EditorLogger.Log("Connect Success");
-        m_IPAdress.text = $"IP: {NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.Address}";
-        m_PortAdress.text = $"Port: {NetworkManager.Singleton.GetComponent<UnityTransport>().ConnectionData.Port}";
+        m_IPAdress.text = $"IP: {m_NetworkManager.GetComponent<UnityTransport>().ConnectionData.Address}";
+        m_PortAdress.text = $"Port: {m_NetworkManager.GetComponent<UnityTransport>().ConnectionData.Port}";
     }
 
     private void FailedToConnect()

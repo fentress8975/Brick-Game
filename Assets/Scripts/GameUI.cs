@@ -2,6 +2,7 @@ using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class GameUI : NetworkBehaviour
@@ -34,6 +35,14 @@ public class GameUI : NetworkBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            m_MenuPanel.gameObject.SetActive(!m_MenuPanel.gameObject.activeInHierarchy);
+        }
+    }
+
     private void Surrender()
     {
         //add cool stuff pls
@@ -52,12 +61,14 @@ public class GameUI : NetworkBehaviour
 
     public void ShowVictoryScreenP1()
     {
-        ShowVictoryScreenP1ClientRpc();
+        m_VictoryPlayerNickname.text = $"Congrats {GameNetworkHandler.Singletone.P1Name}";
+        m_VictoryPanel.SetActive(true);
     }
 
     public void ShowVictoryScreenP2()
     {
-        ShowVictoryScreenP2ClientRpc();
+        m_VictoryPlayerNickname.text = $"Congrats {GameNetworkHandler.Singletone.P2Name}";
+        m_VictoryPanel.SetActive(true);
     }
 
     public void RestartGame()
@@ -83,13 +94,13 @@ public class GameUI : NetworkBehaviour
         m_VictoryPanel.SetActive(false);
     }
     [ClientRpc]
-    private void ShowVictoryScreenP2ClientRpc()
+    public void ShowVictoryScreenP2ClientRpc()
     {
         m_VictoryPlayerNickname.text = $"Congrats {GameNetworkHandler.Singletone.P2Name}";
         m_VictoryPanel.SetActive(true);
     }
     [ClientRpc]
-    private void ShowVictoryScreenP1ClientRpc()
+    public void ShowVictoryScreenP1ClientRpc()
     {
         m_VictoryPlayerNickname.text = $"Congrats {GameNetworkHandler.Singletone.P1Name}";
         m_VictoryPanel.SetActive(true);

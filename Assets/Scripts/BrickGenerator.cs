@@ -9,7 +9,9 @@ public class BrickGenerator : NetworkBehaviour
     [SerializeField] private BrickClient m_BrickClientPrefab;
     [SerializeField] private Transform m_BrickServerParent;
     [SerializeField] private Transform m_BrickParentClient;
-    
+    [SerializeField] private Material m_Player1Color;
+    [SerializeField] private Material m_Player2Color;
+
 
     public PlayersBricks GenerateSymmetrically(bool[,] pattern)
     {
@@ -17,6 +19,9 @@ public class BrickGenerator : NetworkBehaviour
         {
             if (IsHost)
             {
+                Color p1Color = GameNetworkHandler.Singletone.P1Color;
+                Color p2Color = GameNetworkHandler.Singletone.P2Color;
+                LoadPlayersColorClientRpc(p1Color.r, p1Color.g, p1Color.b, p2Color.r, p2Color.g, p2Color.b);
                 List<Brick> p1 = GeneratePlayer1Area(pattern);
                 List<Brick> p2 = GeneratePlayer2Area(pattern);
                 return new PlayersBricks(p1, p2);
@@ -32,9 +37,11 @@ public class BrickGenerator : NetworkBehaviour
         }
     }
 
+
+
     internal PlayersBricksClient GenerateSymmetricallyClient(bool[,] brickListPattern, ulong playerID)
     {
-        if(playerID == 1)
+        if (playerID == 1)
         {
             List<BrickClient> p1 = GeneratePlayer1AreaClient(brickListPattern);
             return new PlayersBricksClient(p1, null);
@@ -164,6 +171,13 @@ public class BrickGenerator : NetworkBehaviour
         {
             return false;
         }
+    }
+
+    [ClientRpc]
+    private void LoadPlayersColorClientRpc(float p1Red, float p1Green, float p1Blue, float p2Red, float p2Green, float p2Blue)
+    {
+        m_Player1Color.color = new(p1Red, p1Green, p1Blue);
+        m_Player2Color.color = new(p2Red, p2Green, p2Blue);
     }
 
     public struct PlayerBrickArea

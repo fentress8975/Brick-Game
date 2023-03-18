@@ -16,7 +16,7 @@ public class NetworkConnectionApprove : MonoBehaviour
         if (m_NetworkManager != null)
         {
             m_NetworkManager.OnClientDisconnectCallback += OnClientDisconnectCallback;
-            m_NetworkManager.ConnectionApprovalCallback = ApprovalCheck;
+            m_NetworkManager.ConnectionApprovalCallback += ApprovalCheck;
         }
         m_NetworkManager.NetworkConfig.ConnectionApproval = true;
     }
@@ -60,5 +60,11 @@ public class NetworkConnectionApprove : MonoBehaviour
             EditorLogger.Log("mesta est");
             return true;
         }
+    }
+
+    private void OnDestroy()
+    {
+        m_NetworkManager.OnClientDisconnectCallback -= OnClientDisconnectCallback;
+        m_NetworkManager.ConnectionApprovalCallback -= ApprovalCheck;
     }
 }

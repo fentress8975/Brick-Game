@@ -55,7 +55,7 @@ public class MainMenuUI : MonoBehaviour
         });
         EditorLogger.Log(PlayerPrefs.HasKey("Player1Nickname").ToString());
         m_PlayerNickNameInputField.text = PlayerPrefs.HasKey("Player1Nickname") ? PlayerPrefs.GetString("Player1Nickname") : "Player";
-        
+
     }
 
 
@@ -109,7 +109,7 @@ public class MainMenuUI : MonoBehaviour
         OnAdressChange?.Invoke(adress);
     }
 
-    private void ChangePort(string port) 
+    private void ChangePort(string port)
     {
         m_PortConnectInput.text = port;
         m_PortHostInput.text = port;

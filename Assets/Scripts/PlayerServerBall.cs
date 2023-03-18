@@ -40,7 +40,7 @@ public class PlayerServerBall : NetworkBehaviour
 
     private void CheckSpeed()
     {
-        if(m_BallSpeed.Value < m_MaxSpeed.Value || m_BallSpeed.Value > m_MaxSpeed.Value)
+        if (m_BallSpeed.Value < m_MaxSpeed.Value || m_BallSpeed.Value > m_MaxSpeed.Value)
         {
             m_BallSpeed.Value = m_MaxSpeed.Value;
         }
@@ -101,7 +101,7 @@ public class PlayerServerBall : NetworkBehaviour
     {
         if (IsHost)
         {
-            
+
             StopAllCoroutines();
             m_MaxSpeed.Value = 0;
         }

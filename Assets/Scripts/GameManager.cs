@@ -6,8 +6,6 @@ public class GameManager : NetworkBehaviour
 {
     [SerializeField] private PlayersBrickHandler m_PlayersBrickHandler;
     [SerializeField] private GameUI m_GameUI;
-    [SerializeField] private ulong m_Player1ID;
-    [SerializeField] private ulong m_Player2ID;
     [SerializeField] private PlayerServerBall m_P1Ball;
     [SerializeField] private PlayerServerBall m_P2Ball;
     [SerializeField] private PlayerServerBar m_P1Bar;
@@ -15,34 +13,37 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField] private bool[,] m_Pattern;
     private NetworkManager m_NetworkManager;
-    private GameNetworkHandler m_GameNetworkHandler;
+    [SerializeField] private GameNetworkHandler m_GameNetworkHandler;
 
     private void Start()
     {
-        if (IsHost)
-        {
-            m_NetworkManager = NetworkManager.Singleton;
-            m_NetworkManager.OnClientDisconnectCallback += PlayerDisconnect;
-        }
+        m_NetworkManager = NetworkManager.Singleton;
+        m_NetworkManager.OnClientDisconnectCallback += PlayerDisconnect;
         m_GameNetworkHandler = GameNetworkHandler.Singletone;
+    }
+
+    public override void OnDestroy()
+    {
+        m_NetworkManager.OnClientDisconnectCallback -= PlayerDisconnect;
+        base.OnDestroy();
     }
 
     private void PlayerDisconnect(ulong id)
     {
-        if (IsHost)
+        EditorLogger.LogWarning("Игрок отключился " + id);
+        EditorLogger.LogWarning("Игрок 1 " + m_GameNetworkHandler.Player1ID);
+        EditorLogger.LogWarning("Игрок 2 " + m_GameNetworkHandler.Player2ID);
+        if (id == m_GameNetworkHandler.Player1ID)
         {
-            if (id == m_Player1ID)
-            {
-                Player2Victory();
-            }
-            else if (id == m_Player2ID)
-            {
-                Player1Victory();
-            }
-            else
-            {
-                throw new Exception("ќтключение не существующего игрока");
-            }
+            Player2VictoryByDisconnect();
+        }
+        else if (id == m_GameNetworkHandler.Player2ID)
+        {
+            Player1VictoryByDisconnect();
+        }
+        else
+        {
+            throw new Exception("Отключение не существующего игрока");
         }
     }
 
@@ -50,8 +51,6 @@ public class GameManager : NetworkBehaviour
     {
         if (IsHost)
         {
-            m_Player1ID = m_GameNetworkHandler.Player1ID;
-            m_Player2ID = m_GameNetworkHandler.Player2ID;
             m_P1Bar = p1Bar;
             m_P2Bar = p2Bar;
             m_P1Ball = p1Ball;
@@ -74,12 +73,26 @@ public class GameManager : NetworkBehaviour
     {
         EditorLogger.Log("P1 win");
         StopGame();
-        m_GameUI.ShowVictoryScreenP1();
+        m_GameUI.ShowVictoryScreenP1ClientRpc();
     }
 
     private void Player2Victory()
     {
         EditorLogger.Log("P2 win");
+        StopGame();
+        m_GameUI.ShowVictoryScreenP2ClientRpc();
+    }
+
+    private void Player1VictoryByDisconnect()
+    {
+        EditorLogger.Log("P1 win by disconnect");
+        StopGame();
+        m_GameUI.ShowVictoryScreenP1();
+    }
+
+    private void Player2VictoryByDisconnect()
+    {
+        EditorLogger.Log("P2 win by disconnect");
         StopGame();
         m_GameUI.ShowVictoryScreenP2();
     }
