@@ -6,6 +6,8 @@ public class PlayersBrickHandler : NetworkBehaviour
 {
     public Action OnPlayer1Victory;
     public Action OnPlayer2Victory;
+    public Action OnPlayer1BrickDestroyed;
+    public Action OnPlayer2BrickDestroyed;
 
     [SerializeField] private BrickGenerator m_BrickGenerator;
     [SerializeField] private PlayersBrickClientHandler m_PlayersBrickClientHandler;
@@ -69,6 +71,7 @@ public class PlayersBrickHandler : NetworkBehaviour
     private void CheckVictoryConditionP1(Brick obj)
     {
         m_PlayersBrickList.P1Bricks.Remove(obj);
+        OnPlayer1BrickDestroyed?.Invoke();
         if (m_PlayersBrickList.P1Bricks.Count == 0)
         {
             EditorLogger.Log($"{this.name} Player1 Victory!");
@@ -79,6 +82,7 @@ public class PlayersBrickHandler : NetworkBehaviour
     private void CheckVictoryConditionP2(Brick obj)
     {
         m_PlayersBrickList.P2Bricks.Remove(obj);
+        OnPlayer2BrickDestroyed?.Invoke();
         if (m_PlayersBrickList.P2Bricks.Count == 0)
         {
             EditorLogger.Log($"{this.name} Player2 Victory!");

@@ -1,9 +1,12 @@
+using System;
 using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerServerBall : NetworkBehaviour
 {
+    public Action OnBallRicochet;
+
     public float BallSpeed { get => m_BallSpeed.Value; }
     public float MaxSpeed { get => m_MaxSpeed.Value; }
     public float Penalty { get => m_Penalty.Value; }
@@ -66,6 +69,7 @@ public class PlayerServerBall : NetworkBehaviour
             m_Rigidbody.rotation = Quaternion.LookRotation(Vector3.Reflect(transform.TransformDirection(Vector3.forward), hitInfo.normal), Vector3.back);
         }
         SyncPlayerBallData(gameObject.transform.position, gameObject.transform.rotation);
+        OnBallRicochet?.Invoke();
     }
 
 
