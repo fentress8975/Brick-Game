@@ -20,7 +20,6 @@ public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliatio
     private ulong m_NumberServer = new();
     private ulong m_FirstUnprocessedCommandNumberLocal = new();
     private ulong m_UnprocessedCommandsCountLocal = new();
-    [SerializeField] private TextMeshProUGUI m_UnprocessedCommandsText;
 
     public void Init(int id)
     {
@@ -104,7 +103,6 @@ public class ClientBallReconciliation : SingletonNetWork<ClientBallReconciliatio
         m_BallPositionsAnglesServerDictionary.Remove(numberServer);
         m_UnprocessedCommandsCountLocal--;
         m_FirstUnprocessedCommandNumberLocal = numberServer + 1;
-        m_UnprocessedCommandsText.text = $"Необработанных команд {m_UnprocessedCommandsCountLocal}";
     }
 
     private void Resync(ulong numberServer, BallPositionAngle ballServerData)

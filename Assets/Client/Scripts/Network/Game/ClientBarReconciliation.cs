@@ -18,7 +18,6 @@ public class ClientBarReconciliation : SingletonNetWork<ClientBarReconciliation>
     private ulong m_NumberLocal = new();
     private ulong m_FirstUnprocessedCommandNumberLocal = new();
     private ulong m_UnprocessedCommandsCountLocal = new();
-    [SerializeField] private TextMeshProUGUI m_UnprocessedCommandsText;
 
     private Vector3 m_PositionToSync = new();
 
@@ -54,7 +53,6 @@ public class ClientBarReconciliation : SingletonNetWork<ClientBarReconciliation>
         m_CommandListLocal.Add(commandNumberLocal, directionLocal);
         m_PositionListLocal.Add(commandNumberLocal, posLocal);
         m_UnprocessedCommandsCountLocal++;
-        m_UnprocessedCommandsText.text = $"Необработанных команд {m_UnprocessedCommandsCountLocal}";
         ChangeLocalPlayerDirection(directionLocal);
         return commandNumberLocal;
     }
@@ -110,7 +108,6 @@ public class ClientBarReconciliation : SingletonNetWork<ClientBarReconciliation>
         m_WaitPosListServer.Remove(numberServer);
         m_UnprocessedCommandsCountLocal--;
         m_FirstUnprocessedCommandNumberLocal = numberServer + 1;
-        m_UnprocessedCommandsText.text = $"Необработанных команд {m_UnprocessedCommandsCountLocal}";
     }
 
     private void Resync(ulong numberServer, Vector3 posServer)
