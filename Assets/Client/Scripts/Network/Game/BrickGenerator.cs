@@ -21,6 +21,8 @@ public class BrickGenerator : NetworkBehaviour
             {
                 Color p1Color = GameNetworkHandler.Singletone.P1Color;
                 Color p2Color = GameNetworkHandler.Singletone.P2Color;
+                m_Player1Color.color = p1Color;
+                m_Player2Color.color = p2Color;
                 LoadPlayersColorClientRpc(p1Color.r, p1Color.g, p1Color.b, p2Color.r, p2Color.g, p2Color.b);
                 List<Brick> p1 = GeneratePlayer1Area(pattern);
                 List<Brick> p2 = GeneratePlayer2Area(pattern);

@@ -30,7 +30,17 @@ public class Brick : NetworkBehaviour
             if (_materials[i].name == "Color (Instance)")
             {
                 _materials[i] = number == PLAYER1 ? m_Player1Color : m_Player2Color;
-                break;
+            }
+            if (_materials[i].name == "Glass (Instance)")
+            {
+                if(number == PLAYER1)
+                {
+                    _materials[i].SetColor("_EmissionColor", m_Player1Color.color);
+                }
+                else
+                {
+                    _materials[i].SetColor("_EmissionColor", m_Player2Color.color);
+                }
             }
         }
         m_ModelRenderer.materials = _materials;

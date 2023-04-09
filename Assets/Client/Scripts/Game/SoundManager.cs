@@ -13,15 +13,13 @@ public class SoundManager : SingletonMono<SoundManager>
 
     private void Start()
     {
-        m_AudioSourceFX = GetComponent<AudioSource>();
-        m_AudioSourceUI = GetComponent<AudioSource>();
-        m_AudioSourceMusic = GetComponent<AudioSource>();
 
         m_AudioSourceFX.volume = m_FXVolume;
         m_AudioSourceFX.loop = false;
         m_AudioSourceUI.volume = m_UIVolume;
         m_AudioSourceUI.loop = false;
         m_AudioSourceMusic.volume = m_MusicVolume;
+        DontDestroyOnLoad(this);
     }
 
     public void PlayFX(AudioClip sound)
